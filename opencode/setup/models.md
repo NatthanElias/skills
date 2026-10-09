@@ -10,8 +10,8 @@ benchmarks of this exact Slim workflow.
 | --- | --- | --- | --- |
 | orchestrator | GLM-5.3-Flash, `max` | Claude Haiku 5.5, `xhigh` | GLM gives sustained coordination a strong agentic score and larger Go allowance. Haiku is a newer, competitive option with a smaller allowance. |
 | oracle | MiMo-V2.6-Pro, default | Claude Haiku 5.5, `max` | MiMo has the strongest general and coding results among this shortlist at low measured task cost. Haiku provides a different model family for independent review. |
-| explorer | DeepSeek V4.1 Flash, `max` | Claude Haiku 5.5, `xhigh` | DeepSeek combines strong long-context and agentic results with a larger Go allowance for substantial repository investigations. Haiku offers stronger general reasoning. |
-| librarian | Claude Haiku 5.5, `xhigh` | DeepSeek V4.1 Flash, `max` | Haiku's general reasoning and knowledge-work results support source comparison and synthesis. DeepSeek offers stronger long-context results and a larger allowance. The root still verifies citations. |
+| explorer | GPT-6 Luna, `xhigh` | DeepSeek V4.1 Flash, `max` | Luna is the user's selected first choice for economical, bounded repository evidence gathering. DeepSeek offers stronger long-context and agentic results for difficult investigations. |
+| librarian | GPT-6 Luna, `xhigh` | Claude Haiku 5.5, `xhigh` | Luna is the user's selected first choice for economical primary-source extraction and summaries. Haiku offers stronger general reasoning and knowledge-work results for source comparison and synthesis. The root still verifies citations. |
 | fixer | GLM-5.3-Flash, `max` | DeepSeek V4.1 Flash, `max` | GLM has stronger terminal results at slightly lower measured task cost. DeepSeek trades some success rate for higher measured output throughput. |
 
 The IDs and verified variants live in [go-models.json](go-models.json). The
@@ -63,10 +63,11 @@ Haiku and Luna have the same allowance. Haiku's input/output prices rise above
 100K input tokens, so DeepSeek is also attractive for very large research packets.
 Compare real completed-task usage before deciding which is cheaper for your projects.
 
-Luna remains useful for narrow extraction tasks, and MiMo Flash for economical
-research. Their low aggregate benchmark costs do not establish the cost of a
-complete investigation including retries and root corrections. The default
-roles handle substantial work, which favors the stronger evidence above.
+The user selected Luna as first choice for both evidence-gathering roles after
+comparing Haiku and DeepSeek. Its low aggregate benchmark cost does not establish
+the cost of a complete investigation including retries and root corrections.
+Keep briefs bounded and assess coverage and source accuracy. The alternatives
+are explicit profile choices; no automatic model switching is installed.
 
 ## Why the older defaults changed
 
