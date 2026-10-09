@@ -1,0 +1,5 @@
+interface:
+  display_name: "Natthan's workflow"
+  short_description: "Apply working rules and audit project setup"
+policy:
+  allow_implicit_invocation: false

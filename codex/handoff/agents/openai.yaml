@@ -1,0 +1,5 @@
+interface:
+  display_name: "Handoff"
+  short_description: "Prepare a fresh-chat handoff between tasks"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Adversarial senior review"
+  short_description: "Review scope and complexity without editing"
+policy:
+  allow_implicit_invocation: false

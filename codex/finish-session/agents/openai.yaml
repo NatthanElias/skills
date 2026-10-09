@@ -1,0 +1,3 @@
+interface:
+  display_name: "Finish Session"
+  short_description: "Finalize and consolidate a Codex session"
