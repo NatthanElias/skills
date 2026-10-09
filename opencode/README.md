@@ -7,6 +7,10 @@ are not included.
 
 ## Install
 
+For Slim installation, agent configuration, and the upgraded orchestration
+workflow, use [the complete setup guide](setup/README.md). It includes
+[two researched model choices per role](setup/models.md).
+
 From the repository root, preview a user-wide installation, then apply it:
 
 ```bash

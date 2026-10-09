@@ -12,6 +12,7 @@ Personal agent skills, grouped by harness.
 scripts/
   install_codex.py
   install_opencode.py
+  setup_opencode.py
 ```
 
 | Harness | Custom skills | Local source |
@@ -31,3 +32,6 @@ folders. Keep each skill's resources together so the whole folder can be copied.
 Use each collection's README for installation and validation. Skills with the
 same name can contain different harness-specific instructions; install each
 collection into its own harness's discovery folder.
+
+For a complete OpenCode installation with Slim and the five-role workflow,
+see [OpenCode setup](opencode/setup/README.md).
