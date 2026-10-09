@@ -10,8 +10,8 @@ benchmarks of this exact Slim workflow.
 | --- | --- | --- | --- |
 | orchestrator | GLM-5.3-Flash, `max` | Claude Haiku 5.5, `xhigh` | GLM gives sustained coordination a strong agentic score and larger Go allowance. Haiku is a newer, competitive option with a smaller allowance. |
 | oracle | MiMo-V2.6-Pro, default | Claude Haiku 5.5, `max` | MiMo has the strongest general and coding results among this shortlist at low measured task cost. Haiku provides a different model family for independent review. |
-| explorer | GPT-6 Luna, `xhigh` | DeepSeek V4.1 Flash, `max` | Luna suits bounded, read-only evidence extraction at low cost. DeepSeek has stronger long-context and terminal results for difficult repository investigations. |
-| librarian | GPT-6 Luna, `xhigh` | MiMo-V2.6-Flash, default | Luna is economical for primary-source extraction and summaries. MiMo offers a larger Go allowance for sustained research. The root still verifies citations. |
+| explorer | DeepSeek V4.1 Flash, `max` | Claude Haiku 5.5, `xhigh` | DeepSeek combines strong long-context and agentic results with a larger Go allowance for substantial repository investigations. Haiku offers stronger general reasoning. |
+| librarian | Claude Haiku 5.5, `xhigh` | DeepSeek V4.1 Flash, `max` | Haiku's general reasoning and knowledge-work results support source comparison and synthesis. DeepSeek offers stronger long-context results and a larger allowance. The root still verifies citations. |
 | fixer | GLM-5.3-Flash, `max` | DeepSeek V4.1 Flash, `max` | GLM has stronger terminal results at slightly lower measured task cost. DeepSeek trades some success rate for higher measured output throughput. |
 
 The IDs and verified variants live in [go-models.json](go-models.json). The
@@ -58,9 +58,15 @@ prices affect actual usage. [OpenCode Go usage limits](https://docs.opencode.ai/
 
 That is why GLM is the sustained-work default even though MiMo Pro has a lower
 AA task cost and a higher index. Reserve MiMo Pro for consequential advice and
-independent verification. If research consumes Luna's allowance, the MiMo Flash
-alternative preserves a low-cost research lane. Compare real completed-task
-usage before deciding that either is cheaper for your projects.
+independent verification. DeepSeek's larger allowance suits sustained exploration;
+Haiku and Luna have the same allowance. Haiku's input/output prices rise above
+100K input tokens, so DeepSeek is also attractive for very large research packets.
+Compare real completed-task usage before deciding which is cheaper for your projects.
+
+Luna remains useful for narrow extraction tasks, and MiMo Flash for economical
+research. Their low aggregate benchmark costs do not establish the cost of a
+complete investigation including retries and root corrections. The default
+roles handle substantial work, which favors the stronger evidence above.
 
 ## Why the older defaults changed
 
