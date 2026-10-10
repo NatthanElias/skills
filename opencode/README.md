@@ -1,7 +1,8 @@
 # OpenCode skills
 
-13 custom skills copied from `~/.config/opencode/skills/`. Supporting files and
-existing attribution are preserved. The `oh-my-opencode-slim` skill is the
+14 custom skills, including local imports and OpenCode ports of the Codex
+collection. Supporting files and existing attribution are preserved.
+The `oh-my-opencode-slim` skill is the
 custom configuration workflow; the plugin itself and its private configuration
 are not included.
 
@@ -38,6 +39,14 @@ place.
 OpenCode loads skill instructions with its native `skill` tool. Access is
 controlled by OpenCode's skill permissions. Retained `agents/openai.yaml` files
 are compatibility metadata; they do not configure OpenCode permissions.
+
+The [handoff skill](handoff/SKILL.md) prepares a temporary Markdown document
+for a fresh session. Invoke `/handoff` explicitly on clients supporting skill
+slash commands, or ask the agent to load `handoff` by exact name. Its metadata
+requests explicit invocation using [OpenCode's native controls](https://opencode.ai/docs/skills/#write-frontmatter).
+OpenCode 1.18.35 registers skills as slash commands but ignores that metadata;
+on that version, the description and body supply the explicit-request rule.
+This rule is an agent instruction, not a runtime permission restriction.
 
 Some workflows use the agents and tools from `oh-my-opencode-slim`; consult
 their `SKILL.md` files for those requirements. The `codemap` workflow includes a

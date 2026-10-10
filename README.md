@@ -18,7 +18,7 @@ scripts/
 | Harness | Custom skills | Local source |
 | --- | ---: | --- |
 | [Codex](codex/README.md) | 17 | `~/.codex/skills/` and `~/.agents/skills/` |
-| [OpenCode](opencode/README.md) | 13 | `~/.config/opencode/skills/` |
+| [OpenCode](opencode/README.md) | 14 | `~/.config/opencode/skills/` |
 
 Each skill retains its instructions, metadata, supporting files, and executable
 permissions. Bundled skills, plugin packages, system-managed Omarchy skills,
