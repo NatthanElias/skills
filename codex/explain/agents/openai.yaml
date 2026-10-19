@@ -1,0 +1,3 @@
+interface:
+  display_name: "Explain work"
+  short_description: "Explain agent work, code and decisions so people can check them"
