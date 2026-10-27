@@ -1,35 +1,27 @@
-# How: mechanism and structure
+# Mechanism and structure
 
-Read this reference when explaining how a subsystem, workflow, algorithm, protocol or project rule operates. Style rules live in [../SKILL.md](../SKILL.md).
+Use this lens to explain a function, subsystem, algorithm, protocol, or project rule. [Explain](../SKILL.md) owns the response length and writing rules.
 
-## Investigate
+## Trace the behavior
 
-Scale the investigation to the question. When scope is ambiguous, state your interpretation and proceed. The user can redirect.
+For a narrow question, read the target, its callers, and the tests that constrain it. For a subsystem, follow inputs from the entry point through decisions and state changes to the outputs. Include relevant failure paths.
 
-- **Narrow question** (one function, one rule, one small module). Read the target, its callers and the tests that pin its behavior.
-- **Broad question** (a subsystem across several files, a cross-cutting feature, an architectural overview). Start at the entry point. Follow data and control flow to the outputs. Read the tests and records that pin each decision point.
+Follow the selected repository boundaries and the workspace's delegation policy. Use [orchestrate](../../orchestrate/SKILL.md) before any subagent dispatch. A single execution trace stays in the main session.
 
-When the environment supports subagents and the subsystem splits into independent slices, explore 2 to 4 slices in parallel, read-only. Follow the repository's delegation rules in `AGENTS.md`. Reconcile overlaps and resolve contradictions by checking the code yourself.
+Use code to establish present behavior. Use [Rationale and history](why.md) when the question concerns intent.
 
-## Structure
+## Build the explanation
 
-Cover these parts in order. Drop any that do not apply. Use them as headings only when the explanation is long enough to need navigation.
+Cover only the parts the question needs, in this order:
 
-1. **Overview.** One or two paragraphs. What the thing is, what it does, and why it exists. A reader can stop here and decide whether to continue.
-2. **Key concepts.** The types, services or records needed to follow the rest, one line each.
-3. **How it works.** The longest part. State what triggers the flow, then walk the data and control flow step by step. Anchor each step and each decision point to `file:line`. Write prose. Quote a short code excerpt only when a point depends on it.
-4. **Where things live.** A short file and directory map for someone starting work here.
-5. **Gotchas.** Non-obvious behavior, pitfalls and history worth knowing. Skip this part when there is nothing to say.
+1. Define the subject, its purpose, and its inputs and outputs.
+2. Introduce the types, services, or records needed to follow it.
+3. Walk through a concrete execution path. Name the actor and action at each step, and link its implementation.
+4. Give a short file map when the reader needs to work on the subsystem.
+5. Describe non-obvious limits, failure modes, and unresolved questions.
 
-## Writing the mechanism
+Explain complexity through its constraints rather than a list of functions. Use a small code excerpt only when the exact expression matters. Keep analogies faithful to the actual mechanism.
 
-- Name concrete actors: "`UserService` calls `AuthClient.refresh()`".
-- When something is complex, explain why it is complex.
-- Use an analogy only when one fits exactly.
-- Keep open questions and gaps visible.
-- Code is evidence of present behavior. Questions of motivation go through [why.md](why.md).
-- For three or more moving parts, add a diagram series from [visuals.md](visuals.md).
+For a flow with several interacting parts, use the build-up technique in [Visual explanations](visuals.md).
 
-## Done when
-
-The reader can predict a relevant execution path and find the code responsible for each step.
+Done when the reader can predict the relevant path, including its decisions, and locate the code that implements each step.

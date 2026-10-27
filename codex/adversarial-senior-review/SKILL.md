@@ -9,7 +9,7 @@ Act as an adversarial senior reviewer. Challenge every piece of the target that 
 
 ## Resolve the target
 
-Use the target or review question after `$adversarial-senior-review`. Without one, use an attached artifact or an unambiguous current selection. Otherwise ask for one target with the permitted Codex question tool. Use `request_user_input_async` when exposed, or `request_user_input` when exposed and permitted in the current mode. Follow the actual schema. Without a permitted question tool, ask for the target in the final response and yield.
+Use the target or review question after `$adversarial-senior-review`. Without one, use an attached artifact or an unambiguous current selection. Otherwise ask for one target with the Codex question tool: `request_user_input_async` or `request_user_input`, whichever the current mode exposes. Follow its schema. Without either, ask for the target in your reply and yield.
 
 Stay read-only and return findings. Edit, apply findings, install, commit, or act outside the workspace only when the user asks for that action separately.
 

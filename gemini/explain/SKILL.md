@@ -1,44 +1,47 @@
 ---
 name: explain
-description: Explain completed agent work, a codebase subsystem, or a project decision so a person can understand and check it. Use when the user asks what you just did, how something works, why something is built a certain way, or to catch them up.
+description: Explain completed work, how a subsystem works, or why a project decision exists. Use when the user asks what changed, how something works, why it was built that way, or to catch them up.
 ---
 
 # Explain
 
-Give the reader a checkable mental model. They should know what changed or what the thing is, how it works, why it exists, and what the evidence does and does not establish.
+Build an explanation the reader can check against the project. Distinguish current behavior, recorded intent, and conclusions the evidence cannot establish.
 
-## Pass 1: the first reply
+## Resolve the subject
 
-Gather only the evidences the immediate question needs. Read the diff, code, records or check output that the answer rests on. Then answer in two or three sentences:
+Use the question after `/explain`, an attached or @-mentioned file, or the work just completed. Ask with `ask_question` when these leave several plausible subjects.
 
-1. **Outcome or plain definition.** State what changed, or what the thing is, and link the primary `file:line` or artifact anchor.
-2. **Mechanism or cited reason.** State how it works in concrete terms, or cite the recorded reason (`AD-NNN`, commit, PR, `plan.md`, `DECISIONS.md`).
-3. **Evidence and boundary.** State what the checks establish and what remains unchecked, assumed or unobserved. A passing engineering check is a different claim from an observed runtime or scientific outcome. Report each one separately.
+Keep investigation read-only. Create a visual artifact when requested, but change project files only with the user's approval.
 
-Close with one short offer to go deeper, shaped to the subject. Always provide the user with at least one option for different modes of explanation, also shaped by the subject, like: a step-by-step diagram, or an interactive HTML explainer, etc. Then stop.
+## Start with a short answer
 
-Pass 1 is done when each of the three sentences carries an anchor or citation, and the boundary sentence names at least one thing the evidence leaves open, or says nothing is left open and why.
+Read the code, diff, decision record, or check result needed for this question. Reuse current evidence already in the conversation. Refresh it when the checkout changed or the evidence is incomplete.
 
-## Pass 2 and later: going deeper
+Unless the user requests depth or a medium up front, answer in two or three sentences:
 
-When the user asks to go deeper, or asks for a lens or medium up front, read every matching reference below. Investigate further where the reference requires it, then produce the deeper explanation. A "teach me" request usually needs `how`, `why` and `visuals` together.
+1. State the outcome or define the subject. Link the code or artifact that establishes it.
+2. Describe the concrete mechanism, or cite the record that states the reason.
+3. Separate what the evidence verifies from assumptions and unobserved outcomes. A passing test does not establish a production or scientific result.
 
-| Lens | Read when | Reference |
-| --- | --- | --- |
-| Work and deltas (`what`) | Explaining work just completed, reviewing a diff or PR, or catching the user up on session changes | [references/what.md](references/what.md) |
-| Mechanism and structure (`how`) | Explaining how a subsystem, workflow, algorithm, protocol or project rule operates | [references/how.md](references/how.md) |
-| Rationale and history (`why`) | Explaining why code, a constraint, an architecture or a project decision exists | [references/why.md](references/why.md) |
-| Visuals and teaching (`visuals`) | Teaching a topic in depth, or producing diagrams, images or interactive HTML | [references/visuals.md](references/visuals.md) |
+Offer a subject-specific way to go deeper through `ask_question`, then stop. Offer only media the environment supports, such as a step-by-step walkthrough, Mermaid diagrams, or a self-contained HTML explainer.
 
-The lenses apply to code, architecture, specs, data and research alike.
+Done when the answer's factual claims have source anchors and its evidence boundary is explicit. Say what remains unknown, or why the cited evidence settles the question.
 
-## Writing style
+## Go deeper on request
 
-Write in 80% ASD-STE100, the Simplified Technical English of aerospace maintenance manuals, and pass all text through `unslop` skill. Take its discipline. Claim no formal compliance with the standard.
+When the user requests detail or a medium, load each reference that matches the question. A teaching request can need several lenses.
 
-1. **One claim or action per sentence.** Aim for 20 to 25 words or fewer. Split clause chains with periods.
-2. **One name per concept.** Use the real codebase name for each type, record or artifact, and keep that name throughout.
-3. **Active voice.** Name the actor, the verb and the target: "`Coordinator` calls `SubscriptionProxy.acquire()`".
-4. **Explicit epistemic and causal links.** Write "because", "so", "the test shows" or "unverified" where the evidence supports them. Keep project domain terms and natural spoken flow. Open with the content itself, in place of framing labels such as "TL;DR", "At its core" or "The key insight".
+| Question | Reference |
+| --- | --- |
+| What changed or what did the agent do? | [Work and changes](references/what.md) |
+| How does the code, workflow, or rule operate? | [Mechanism and structure](references/how.md) |
+| Why does the implementation or decision exist? | [Rationale and history](references/why.md) |
+| Can you teach this with diagrams or an interactive example? | [Visual explanations](references/visuals.md) |
 
-The reply is the explanation itself, in place of a report about what you explained.
+## Write for Antigravity
+
+- Link workspace files with Markdown links to their absolute paths. Use forward slashes in link targets and append `:line` for a source location.
+- Keep repository links relative inside any document you save. Cite decisions, commits, and review records where they establish a claim.
+- Write short, active sentences with one claim each. Use the same project name for a concept throughout.
+- Mark inference and uncertainty where they occur. Keep domain terms the reader needs, and explain unfamiliar ones.
+- Apply `unslop` to the explanation. Deliver the explanation itself rather than a report about producing it.

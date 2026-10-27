@@ -25,14 +25,17 @@ location to use it.
 
 The installer skips identical copies and refuses conflicting destinations
 before copying anything. Back up a conflicting skill outside the discovery
-folders before retrying. On a machine using both `~/.codex/skills` and
-`~/.agents/skills`, keep only one installed copy of each name. This repository's
-initial import leaves the existing installations in place.
+folders before retrying. Codex does not merge same-named skills, so keep the
+legacy `~/.codex/skills` folder free of copies of these names.
+
+OpenCode v2 also reads `~/.agents/skills`. See
+[Keep other harnesses' skills out](../opencode/README.md#keep-other-harnesses-skills-out)
+when you add a skill that has no OpenCode version.
 
 Installation creates independent copies. After editing a skill in this
 repository, back up its installed copy and reinstall to apply the update.
 If Codex does not pick up an installed skill, restart it. Invoke a skill by its
-name, for example `$grilling`. Existing explicit-only policies are preserved.
+name, for example `$grill-me`. Existing explicit-only policies are preserved.
 
 ## Validate
 

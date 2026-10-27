@@ -1,34 +1,26 @@
-# What: work and deltas
+# Work and changes
 
-Read this reference when explaining work just completed, reviewing a diff or PR, or catching the user up on session changes. Style rules live in [../SKILL.md](../SKILL.md).
+Use this lens for completed work, a diff, a pull request, or a session catch-up. [Explain](../SKILL.md) owns the response length and writing rules.
 
-## Gather
+## Establish the change
 
-1. Re-read current state before reporting it. Check `git status`, the diff, check output and every record the work touched. Your memory of the session is a lead to confirm.
-2. Collect every item waiting on the user. An item is a call only the user can make, such as a product choice, an approval, an irreversible action or access you lack. Work you can still do yourself is a next step for you.
-3. Explain every number before you report it. For each count, metric, timing or result:
-   - Re-derive it from its source, and say so when you correct one.
-   - Name what bounds it, such as the run count, the spread, a resource limit or the sample.
-   - List what else it could be measuring, such as errors, skipped or cached work, code that never ran, or noise. Rule each one out with evidence, or state it as open.
-   - When you cannot name the bound, call the number unexplained.
+1. Use current Git status, the relevant diff, touched records, and check output. Inspect only missing or stale evidence.
+2. Trace each changed behavior to its implementation and proof. Separate fixes made during the work from work still outstanding.
+3. Identify decisions, approvals, access, or irreversible actions that require the user. Keep work the agent can finish on the agent's next-step list.
+4. Recompute reported counts and measurements from their sources. Name their scope, sample, limits, and uncertainty. Check whether errors, skips, caches, or unexecuted paths could explain the result. Label unexplained numbers as such.
 
-## Write
+## Explain the result
 
-1. Open with one sentence that names the user-visible outcome and what waits on the user. When nothing waits, say so.
-2. Group changes by logical flow, such as cause, change and effect, or request and steps. Cite files as anchors inside that flow, in place of a file-by-file list.
-3. Name every bug found and fixed along the way.
-4. Give each claim a status:
-   - **Verified.** Name the check, test or observation that verified it.
-   - **Assumed.** Name the assumption and what breaks if it fails.
-   - **Unobserved.** Name what has not run or been measured yet.
-5. List action items last. For each one, give the call, your pick, the evidence behind your pick and its risk, even when the risk is low. Each item must stand alone when read out of context.
+Open with the user-visible outcome and any pending user decision. Group the rest by cause and effect or execution flow, with source links beside the claims.
 
-## Morfe boundaries
+Make each claim's status explicit:
 
-- Passing engineering verification is separate from an observed transfer comparison. Report "tests pass" and "the pilot observed X" as different claims.
-- A no-transfer or all-withheld result is valid evidence about the mechanism. Report it as a finding, with the same weight as a positive one.
-- Name the actual author and reviewer of each decision or result, as the records attribute them.
+- **Verified** names the test, observation, or record that supports it.
+- **Assumed** states the assumption and the consequence if it fails.
+- **Unobserved** names behavior or a result that has not been run or measured.
 
-## Done when
+Keep engineering checks separate from observed runtime, experimental, or business outcomes. Negative and inconclusive results still belong in the explanation. Attribute authors and reviewers according to the records.
 
-Every changed behavior, every reported number and every waiting item appears with its anchor and its status.
+End with pending user actions, when any exist. Give each action enough context to stand alone, including the decision, recommendation, supporting evidence, and risk.
+
+Done when every changed behavior, reported number, and pending decision has a source and a status.

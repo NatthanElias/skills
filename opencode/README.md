@@ -1,16 +1,8 @@
 # OpenCode skills
 
-14 custom skills, including local imports and OpenCode ports of the Codex
-collection. Supporting files and existing attribution are preserved.
-The `oh-my-opencode-slim` skill is the
-custom configuration workflow; the plugin itself and its private configuration
-are not included.
+Ten skills for OpenCode v2: OpenCode ports of the shared `vscode/.github` skills, plus `orchestrate` and `escrita-academica`. `orchestrate` uses OpenCode's built-in `explore` and `general` subagents through the `subagent` tool.
 
 ## Install
-
-For Slim installation, agent configuration, and the upgraded orchestration
-workflow, use [the complete setup guide](setup/README.md). It includes
-[two researched model choices per role](setup/models.md).
 
 From the repository root, preview a user-wide installation, then apply it:
 
@@ -25,44 +17,35 @@ For a project installation:
 python3 scripts/install_opencode.py --target /path/to/project/.opencode/skills
 ```
 
-These are OpenCode's native [skill discovery locations](https://docs.opencode.ai/docs/skills/).
-Use them to keep OpenCode variants separate from same-named Codex skills in
-shared `.agents/skills` folders.
+The installer needs Python 3. It copies the full collection, skips identical copies, and refuses conflicting destinations before copying anything. Back up conflicting skills outside discovery folders before retrying. Installation creates independent copies; back up an installed copy and reinstall after editing its source here.
 
-The installer needs Python 3. It copies the full collection, skips identical
-copies, and refuses conflicting destinations before copying anything. Back up
-conflicting skills outside discovery folders before retrying. Installation
-creates independent copies; back up an installed copy and reinstall after
-editing its source here. The initial import leaves existing installations in
-place.
+## Keep other harnesses' skills out
 
-OpenCode loads skill instructions with its native `skill` tool. Access is
-controlled by OpenCode's skill permissions. Retained `agents/openai.yaml` files
-are compatibility metadata; they do not configure OpenCode permissions.
+OpenCode v2 also loads global skills from `~/.claude/skills/` and `~/.agents/skills/`, which hold the Claude Code and Codex collections. `~/.config/opencode/skills/` takes precedence over both, so every skill with an OpenCode version shadows its Claude Code and Codex copies. Hide the skills that exist only in the other collections with `skill` deny rules in `~/.config/opencode/opencode.json`:
 
-The [handoff skill](handoff/SKILL.md) prepares a temporary Markdown document
-for a fresh session. Invoke `/handoff` explicitly on clients supporting skill
-slash commands, or ask the agent to load `handoff` by exact name. Its metadata
-requests explicit invocation using [OpenCode's native controls](https://opencode.ai/docs/skills/#write-frontmatter).
-OpenCode 1.18.35 registers skills as slash commands but ignores that metadata;
-on that version, the description and body supply the explicit-request rule.
-This rule is an agent instruction, not a runtime permission restriction.
+```json
+"permissions": [
+  { "action": "skill", "resource": "finish-session", "effect": "deny" },
+  { "action": "skill", "resource": "natthan-workflow", "effect": "deny" }
+]
+```
 
-Some workflows use the agents and tools from `oh-my-opencode-slim`; consult
-their `SKILL.md` files for those requirements. The `codemap` workflow includes a
-Node.js helper, and its examples use the global installation path. For a
-project installation, run the helper from that skill's `scripts/` folder.
+Add a rule whenever a Claude Code or Codex skill has no OpenCode version.
+
+## Subagents
+
+`orchestrate` needs the built-in `explore` and `general` agents. Leave them enabled in `opencode.json`. The `subagent` tool takes no model, so a subagent runs on its agent's configured `model` or on the parent session's model. For a reviewer on another model family, add a custom agent with its own `model` under `~/.config/opencode/agents/`.
+
+## Invoke
+
+The model loads skills with the `skill` tool. To ask for one by name, mention it as `@skill-id`, for example `@handoff`. `adversarial-senior-review` sets `disable-model-invocation: true`, so it loads only when named.
 
 ## Validate
 
-The existing structural checker can also check this collection. It requires
-Python 3 and PyYAML:
+The checker requires Python 3 and PyYAML:
 
 ```bash
-python3 codex/writing-for-agents/scripts/check_harness.py opencode
+python3 opencode/writing-for-agents/scripts/check_harness.py opencode
 ```
 
-It checks names, descriptions, retained compatibility metadata, and local
-Markdown links. It does not verify OpenCode permissions or the availability of
-external tools and agents. Validate the two collections separately because
-same-named variants are intentional.
+It checks names, descriptions, OpenCode frontmatter, and local Markdown links. It does not verify permissions or the availability of tools and agents.

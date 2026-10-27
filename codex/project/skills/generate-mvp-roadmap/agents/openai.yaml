@@ -1,0 +1,3 @@
+interface:
+  display_name: "MVP roadmap"
+  short_description: "Split a fixed-deadline MVP into developer fronts"

@@ -1,9 +1,9 @@
 ---
 name: writing-for-agents
-description: Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.
+description: Writing documents for AI AGENTS. Use when creating or editing skills, agent definitions, instruction files, or documents they link to.
 ---
 
-Reference for writing any document an agent consumes: a skill, an `AGENTS.md` / `CLAUDE.md`, a doc reached by a pointer. The packaging differs; the writing does not: the same levers make each one predictable, since the agent takes the same _process_ every run rather than producing the same output.
+Reference for writing any document an agent consumes: a skill, an agent definition, `AGENTS.md`, a doc reached by a pointer. The packaging differs; the writing does not: the same levers make each one predictable, since the agent takes the same _process_ every run rather than producing the same output.
 
 When the document you're writing is a skill, read [`SKILL-MECHANICS.md`](SKILL-MECHANICS.md) for frontmatter, invocation choice, and router skills.
 
@@ -79,3 +79,18 @@ You win twice: fewer tokens, and a sharper hook for the agent to hang its thinki
 - The **environment** is a source of truth too (`package.json` scripts, config files, the directory layout, `--help` output), and a document that restates it is a **cache**: a copy of a lookup, earning its load only when the lookup is expensive. Cache what the agent cannot find by looking: the unwritten convention, the reason behind a choice, the gotcha no config confesses. Leave the one-file, one-command lookups to the environment, where they cannot go stale.
 - Check every line for **relevance**: does it still bear on what the document does? A line loses relevance by never bearing on the task (mere exposition, or a branch that should be disclosed) or by going stale as the behaviour or world it describes changes. Shorter documents are easier to keep relevant. Without a pruning discipline the default fate is **sediment**: stale layers that settle because adding feels safe and removing feels risky, until you must core down through them to find what is still live.
 - Hunt **no-ops** sentence by sentence: an instruction the model already obeys by default pays load to say nothing. The test (does it change behaviour versus the default?) is model-relative, not reader-relative: two people disagreeing about a no-op disagree about the default, and settle it by running the document, not by debate. When a sentence fails, delete the whole sentence rather than trim words from it. The test also grades leading words: a word too weak to beat the default (_be thorough_ when the agent is already thorough-ish) is a no-op, and the fix is a stronger word (_relentless_), not a different technique.
+
+## In OpenCode
+
+- Place each rule by owner: `AGENTS.md` for instructions, skills for branch-specific procedures, references for domain facts, and `opencode.json` for client settings. OpenCode v2 reads `~/.config/opencode/AGENTS.md` and the `AGENTS.md` files from the working directory up to the project root. It does not read `CLAUDE.md`.
+- OpenCode loads global skills from `~/.config/opencode/skills/`, `~/.claude/skills/`, and `~/.agents/skills/`, and project skills from `.opencode/skills/`, `.claude/skills/`, and `.agents/skills/`. `~/.config/opencode/skills/` wins over the other global roots, and project `.opencode/skills/` wins over it. The folder name is the skill ID, so an OpenCode skill shadows a Claude Code or Codex skill with the same name. To hide another harness's skill that has no OpenCode version, add a `skill` deny rule to `permissions`.
+- The model loads a skill with the `skill` tool by its exact ID. The user names one as `@skill-id`.
+- An agent's `permissions` limit what it can call; they are not an OS sandbox. State file and command limits as rules too.
+- Apply `unslop` to every line you write.
+- After changing skills, run [scripts/check_harness.py](scripts/check_harness.py) against their directories. From this skill's directory, for example:
+
+  ```bash
+  python3 scripts/check_harness.py . /absolute/path/to/another-changed-skill
+  ```
+
+  It needs Python 3 and PyYAML. With no arguments it checks this skill; `--global` checks every skill in `~/.config/opencode/skills/`, and `--names` selects skills by name. It prints `Harness OK` or the first invalid frontmatter, Codex metadata left in a ported skill, duplicate name, or broken link. A pass does not prove behavior, tool availability, or isolation. Exercise new scripts and important branches separately.
