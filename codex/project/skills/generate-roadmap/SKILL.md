@@ -1,28 +1,31 @@
 ---
-name: generate-mvp-roadmap
-description: "Roadmap a PoC or MVP with a fixed deadline into parallel developer fronts, before any feature planning. Use to scope an MVP or PoC, split a project between developers, or update the roadmap at a milestone."
-argument-hint: '[brief, PRD, discovery package, or project description]'
+name: generate-roadmap
+description: "Roadmap a PoC, an MVP, or the next phase of an existing project, with a fixed deadline, into parallel developer fronts before any feature planning. Use to scope an MVP or PoC, plan a project's next phase or version, split work between developers, or update or close the roadmap at a milestone."
 ---
 
-# Generate an MVP roadmap
+# Generate a roadmap
 
-Turn a closed-scope project into `docs/roadmap/ROADMAP.md`, `docs/roadmap/STORIES.md`, and `docs/roadmap/DECISIONS.md`. The roadmap splits the work into fronts, one per developer, so AI-assisted developers build in parallel and preferably never edit the same file. Each developer then plans and builds the features of their front, using the stories as accepted input.
+Turn a closed-scope project, or the next phase of an existing one, into `docs/roadmap/ROADMAP.md`, `docs/roadmap/STORIES.md`, and `docs/roadmap/DECISIONS.md`. The roadmap splits the work into fronts, one per developer, so AI-assisted developers build in parallel and preferably never edit the same file. Each developer then plans and builds the features of their front, using the stories as accepted input.
 
 The roadmap decides only what crosses fronts: the goal, the deadline, the team, who owns what, the shared contracts, the order, and the cut line. Acceptance criteria, checks, and code-level design belong to each feature's plan.
 
+A roadmap needs a goal and a fixed date. Ongoing work with neither, such as a stream of bugs and small improvements, is not a phase: plan each item with feature-workflow instead.
+
 ## Words used here
 
+- **Phase.** One roadmap, from its kickoff to its deadline. A new project's first roadmap is phase 1. Each later phase plans the next stretch of an existing product, and a finished phase is archived under `docs/roadmap/phases/`.
 - **Front.** A part of the project that one developer, or one pair, owns until the deadline. It owns modules, folders, or repositories that no other front edits.
 - **Demo story.** The one end-to-end thing the team shows at the deadline. It decides what is Must.
 - **Cut line.** The boundary between what ships and what waits. The date stays fixed, and the cut line moves up when time runs short.
 - **Contract.** Anything one front provides and another uses, such as an API, an event, a shared type, or a table.
-- **Walking skeleton.** Milestone 0. A thin path through every layer, with the repository, build, and test runner working.
+- **Walking skeleton.** Milestone 0 of a new project. A thin path through every layer, with the repository, build, and test runner working.
+- **Groundwork.** Milestone 0 of a later phase: the changes to existing shared files and existing contracts that more than one front needs, made once before the fronts split. A phase that needs none has no milestone 0.
 
 ## Ask the team
 
-Ask through `AskUserQuestion`, one decision per question, each with a recommended option. The team may never have planned a project, so explain each option in plain words with its consequence.
+Ask through the Codex question tool (`request_user_input_async` or `request_user_input`, whichever the current mode exposes), one decision per question, each with a recommended option. The team may never have planned a project, so explain each option in plain words with its consequence.
 
-At the start of every run, including a checkpoint, ask which language the team wants for the generated documents. Confirm the choice even when the input or existing documents specify a language. Recommend that language when available, or the language of the user's request otherwise.
+At the start of every run, including a checkpoint or a phase close, ask which language the team wants for the generated documents. Confirm the choice even when the input or existing documents specify a language. Recommend that language when available, or the language of the user's request otherwise.
 
 Use the confirmed language for all prose in `ROADMAP.md`, `STORIES.md`, and `DECISIONS.md`, including headings, table text, story scenarios, and diagram labels. Preserve filenames, link targets, identifiers, code references, machine-readable syntax, and decision tags. When the team selects a different language at a checkpoint, update the roadmap's recorded language and translate existing prose.
 
@@ -30,13 +33,17 @@ Done when the team has confirmed the output language for this run, before any do
 
 ## Steps
 
-If `docs/roadmap/ROADMAP.md` already exists, run [Checkpoint](#checkpoint) instead.
+If `docs/roadmap/ROADMAP.md` already exists, choose the run with [Existing roadmap](#existing-roadmap) instead.
 
 ### 1. Read the input
 
-Accept any input: a brief, a PRD, a discovery package, or a chat description. On existing code, also read the module and repository layout, starting from `docs/workspace/overview.md` where present.
+Accept any input: a brief, a PRD, a discovery package, a phase goal, or a chat description.
 
-Done when every feature the input names is listed and you know which of goal, deadline, and team the input leaves open.
+Propose the mode, and ask the team to confirm it. The mode is **next phase** when the project already has application code or an archived phase under `docs/roadmap/phases/`, and **new project** otherwise. An existing project with no archived phase starts at phase 1 in next-phase mode.
+
+In a next phase, also read the module and repository layout, starting from `docs/workspace/overview.md` where present, and the most recent archived phase. List that phase's unfinished, cut, and Won't features as candidates. A candidate keeps its slug and story ID but no priority, so step 4 sorts it again against the new demo story.
+
+Done when the team has confirmed the mode, every feature the input names and every candidate is listed, and you know which of goal, deadline, and team the input leaves open.
 
 ### 2. Fill the gaps
 
@@ -46,23 +53,25 @@ Done when the team has confirmed the developer count, the deadline, and the demo
 
 ### 3. Agree the demo story
 
-Propose one demo story: who uses the product, what they do, and what they see at the end. Fit it to the deadline.
+Propose one demo story: who uses the product, what they do, and what they see at the end. Fit it to the deadline. In a next phase, the demo story shows what works at the deadline that does not work today.
 
 Done when the team has confirmed one demo story.
 
 ### 4. Sort and size the scope
 
-Sort every feature into Must, Should, Could, and Won't. A Must is a feature the demo story breaks without. Size each Must, Should, and Could as S, M, or L relative to the others, never in hours. Order the Should and Could items by which to cut first. Give each feature a short lowercase slug that names it in both documents.
+Sort every feature, candidates included, into Must, Should, Could, and Won't. A Must is a feature the demo story breaks without. Size each Must, Should, and Could as S, M, or L relative to the others, never in hours. Order the Should and Could items by which to cut first. Give each new feature a short lowercase slug that names it in both documents. A candidate keeps its slug.
 
 Ask the team whether the Must items fit in about 60% of the time budget. The rest absorbs review, integration, and surprises, which stay at human pace with AI help. If the Musts look bigger, propose a smaller demo story or a thinner version of a Must, and let the team choose. Plan against the date the team gave and move the cut line, never the date.
 
 Done when every feature has a priority, every Must, Should, and Could has a size, the team has confirmed each Won't and the cut order, and the 60% question has an answer.
 
-### 5. Plan the walking skeleton
+### 5. Plan milestone 0
 
-Make milestone 0 a walking skeleton through the demo story. It also creates the shared structure the fronts will add to, such as module folders, route registration, and the migration layout, so later fronts add files instead of editing shared ones. On a new project, the build and test commands come from this milestone, and it is the first feature planned with feature-workflow, which carries the walking-skeleton obligations. Fronts split after it.
+In a new project, make milestone 0 a walking skeleton through the demo story. It also creates the shared structure the fronts will add to, such as module folders, route registration, and the migration layout, so later fronts add files instead of editing shared ones. The build and test commands come from this milestone, and it is the first feature planned with feature-workflow, which carries the walking-skeleton obligations. Fronts split after it.
 
-Done when the skeleton's path, the shared structure it creates, and the developer who builds it are named.
+In a next phase, make milestone 0 the groundwork: the changes to existing shared files and existing contracts that more than one front needs, such as a new module folder, a route registration change, or a changed shared type. One developer builds it as a feature planned with feature-workflow, and fronts split after it. New contracts follow step 7 instead. When the phase changes no shared file or existing contract, propose skipping milestone 0, and the fronts split at the kickoff.
+
+Done when milestone 0's path or changes, the shared structure it creates, and the developer who builds it are named, or the team has confirmed that this phase has no milestone 0.
 
 ### 6. Cut the fronts
 
@@ -86,7 +95,7 @@ Done when every contract has one owner and named users, every front dependency p
 
 ### 8. Write the stories
 
-Write one user story per Must and Should feature, with an ID such as `US-01` and one to three Given-When-Then scenarios: the happy path and the main failure. Keep any story IDs the input already has exactly as given. IDs stay fixed for the life of the project, so a cut story keeps its ID and moves to Won't.
+Write one user story per Must and Should feature, with an ID such as `US-01` and one to three Given-When-Then scenarios: the happy path and the main failure. Keep any story IDs the input already has exactly as given. IDs stay fixed for the life of the project, so a cut story keeps its ID and moves to Won't. In a next phase, a candidate keeps its story ID, and a new story takes the next ID after the highest one in any phase.
 
 Done when every Must and Should feature has a story with a happy-path scenario, and every story ID sits under exactly one front.
 
@@ -100,7 +109,7 @@ Done when the team has confirmed the size mapping, every Must, Should, and Could
 
 ### 10. Write the documents
 
-Fill the [templates](references/templates.md) into `docs/roadmap/ROADMAP.md`, `docs/roadmap/STORIES.md`, and `docs/roadmap/DECISIONS.md`. Log in `DECISIONS.md` each choice the team made during the interview that changes something the roadmap records, such as the output language, the demo story, the cut order, a thinned Must, the size mapping, or a staffing change, by the [decision log rules](references/templates.md#decision-log-rules). Those rules also add a `team D-NN` constraint record for each choice that binds code. All three are reference pages for people, so apply `technical-writing` and `unslop` to them, keeping the decision markers those rules protect. Keep the files in version control so every developer reads the same plan, and ask before committing.
+Fill the [templates](references/templates.md) into `docs/roadmap/ROADMAP.md`, `docs/roadmap/STORIES.md`, and `docs/roadmap/DECISIONS.md`. In a next phase, add to the existing `DECISIONS.md`, and list every archived phase in the roadmap's Previous phases line. Log in `DECISIONS.md` each choice the team made during the interview that changes something the roadmap records, such as the output language, the demo story, the cut order, a thinned Must, the size mapping, or a staffing change, by the [decision log rules](references/templates.md#decision-log-rules). Those rules also add a `team D-NN` constraint record for each choice that binds code. All three are reference pages for people, so apply `technical-writing` and `unslop` to them, keeping the decision markers those rules protect. Keep the files in version control so every developer reads the same plan, and ask before committing.
 
 Done when every template section is filled, or states `None` with a reason, and every choice from the interview that the roadmap records has a line in `DECISIONS.md`.
 
@@ -112,7 +121,7 @@ Check the three documents against this list:
 2. The demo story needs every Must.
 3. The team confirmed every Won't and the cut order.
 4. The roadmap records whether the Musts fit in about 60% of the time budget.
-5. Milestone 0 is a walking skeleton, every milestone is a demoable outcome with a date, and the last one is the demo story on the deadline.
+5. Milestone 0 is a walking skeleton in a new project, and groundwork or absent in a next phase. Every milestone is a demoable outcome with a date, and the last one is the demo story on the deadline.
 6. The fronts number no more than the developers, and every developer owns a front, pairs on one, or runs a support front.
 7. Every owned path and shared file has one owner front.
 8. Every contract has one owner front and named users.
@@ -122,10 +131,28 @@ Check the three documents against this list:
 12. The schedule assumptions state the size-to-days mapping the team confirmed.
 13. Every `DECISIONS.md` line changes something the roadmap records, has a unique `D-<NN>` ID and one tag, is one sentence in the decision formula, and sits under its date and occasion. Active holds only decisions in force. Each `[CHANGED]` line ends with `(replaces D-<NN>)`, and the line it names sits in Replaced ending with `(replaced by D-<NN>)`. When feature-workflow is installed, every active decision that binds code has a record under `.specs/constraints/` whose origin names its `D-<NN>`.
 14. The team confirmed the output language for this run, the roadmap records it, and all three documents use it.
+15. In a next phase, every candidate has a priority, every candidate story keeps its ID, every new story ID is higher than any earlier one, and the Previous phases line links every archived phase.
 
 Present the fronts, contracts, cut line, milestones, and schedule to the team.
 
 Done when every item passes and the team has the documents.
+
+## Existing roadmap
+
+Read `docs/roadmap/ROADMAP.md`. When its deadline has passed or its last milestone is done, propose [Close the phase](#close-the-phase). Otherwise, propose [Checkpoint](#checkpoint). Ask the team to confirm.
+
+Done when the team has confirmed which run to do.
+
+## Close the phase
+
+1. Read `docs/roadmap/ROADMAP.md`, `docs/roadmap/STORIES.md`, and `docs/roadmap/DECISIONS.md`. Ask each front owner for final status, and record in the Scope and Milestones tables what shipped and what did not.
+2. Number the phase one higher than the last folder under `docs/roadmap/phases/`, or `01` when there is none, and give it a short lowercase slug from its demo story. Move `ROADMAP.md` and `STORIES.md` into `docs/roadmap/phases/<NN>-<slug>/` with `git mv`. In the moved roadmap, point the Decisions section at both the phase's own `DECISIONS.md` and `../../DECISIONS.md`.
+3. Create `docs/roadmap/phases/<NN>-<slug>/DECISIONS.md` from the DECISIONS.md template, and move every Replaced line into it.
+4. For each Active decision, ask the team whether it still applies after this phase. Recommend archiving decisions that concerned only this phase, such as its demo story, deadline, cut order, thinned Musts, size mapping, and staffing. Recommend keeping decisions that still apply, such as the output language or the stack. A decision with a `team D-<NN>` constraint record under `.specs/constraints/` stays Active while that record exists. Move each archived line into the phase's `DECISIONS.md`, under its original date and occasion.
+5. Move every line unchanged, ID and pointers included. IDs are never reused, so a pointer such as `(replaces D-<NN>)` still names one decision after its target moves.
+6. Plan the next phase with [Steps](#steps) from step 1, in next-phase mode, with the archived phase as input.
+
+Done when the phase folder holds its `ROADMAP.md`, `STORIES.md`, and `DECISIONS.md`, the top-level `DECISIONS.md` has an empty Replaced section and holds in Active only the decisions the team kept, and the next phase's documents pass [Check and present](#11-check-and-present).
 
 ## Checkpoint
 

@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 DAILY = (
-    "workflow-setup", "workspace-analysis", "generate-mvp-roadmap", "feature-workflow", "diagnosing-bugs",
+    "workflow-setup", "workspace-analysis", "generate-roadmap", "feature-workflow", "diagnosing-bugs",
     "handoff", "grill-me", "explain", "unslop", "technical-writing", "writing-for-agents",
     "adversarial-senior-review", "orchestrate-vscode",
 )

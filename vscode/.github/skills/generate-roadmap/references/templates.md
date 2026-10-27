@@ -9,6 +9,8 @@ Fill the three templates for the project. Replace every `<placeholder>`, and rep
 
 Last checkpoint: <YYYY-MM-DD>. Stories: <link to STORIES.md>.
 
+Phase <NN>, <new project or next phase>. Previous phases: <a link to each `phases/<NN>-<slug>/ROADMAP.md`, oldest first>, or `None`.
+
 ## Goal and demo story
 
 <The problem the project solves, in one or two sentences.>
@@ -43,17 +45,17 @@ The chart spreads the scope features over the fronts in working days, up to the 
   "themeCSS": ".grid .tick line{stroke:#7f7f7f;opacity:0.4} text.taskTextOutsideRight,text.taskTextOutsideLeft{fill:#7f7f7f !important} text.taskText{paint-order:stroke;stroke:#56B4E9;stroke-width:4px;stroke-linejoin:round} text.taskText[class*=critText]{stroke:#E69F00} text.taskText[class*=doneText]{stroke:#A0A0A0} text.taskText[class*=activeText]{stroke:#009E73}"
 }}%%
 gantt
-    title <Project>, MVP until <YYYY-MM-DD>
+    title <Project>, <MVP or phase NN> until <YYYY-MM-DD>
     dateFormat YYYY-MM-DD
     axisFormat %d/%m
     excludes weekends, <YYYY-MM-DD of each holiday>
 
     section Milestones
-    M0 Walking skeleton                :milestone, m0, <YYYY-MM-DD>, 0d
+    M0 <Walking skeleton or Groundwork> :milestone, m0, <YYYY-MM-DD>, 0d
     M<n> <outcome>                     :milestone, m<n>, <YYYY-MM-DD>, 0d
 
-    section Skeleton, <owner>
-    Walking skeleton                   :crit, skel, <YYYY-MM-DD>, <n>d
+    section Milestone 0, <owner>
+    <Walking skeleton or Groundwork>   :crit, skel, <YYYY-MM-DD>, <n>d
 
     section <Front>, <owners>
     <slug> US-02                       :crit, <id>, after skel, <n>d
@@ -82,11 +84,15 @@ The schedule rests on these assumptions:
 
 Cut order, first to go: <slug>, <slug>.
 
+At a phase close, the Priority column keeps the phase's priorities, and each row records whether the feature shipped.
+
 ## Milestones
+
+Leave out the milestone 0 row when the phase has no milestone 0.
 
 | Milestone | Outcome | Target date | Status |
 | --- | --- | --- | --- |
-| 0 | Walking skeleton: <the thin path through every layer>, with build and tests running. | <YYYY-MM-DD> | <status> |
+| 0 | <Walking skeleton: the thin path through every layer, with build and tests running. Or groundwork: the shared files and existing contracts it changes.> | <YYYY-MM-DD> | <status> |
 | <n> | <what the team can show working> | <YYYY-MM-DD> | <status> |
 
 ## Fronts
@@ -133,10 +139,10 @@ Decisions that cross fronts live in <link to DECISIONS.md>.
 
 - The Schedule section sits between Constraints and Scope in ROADMAP.md. No other file holds the chart.
 - Write one `:milestone, m<n>, <date>, 0d` line per row of the Milestones table.
-- Write one section per front, named `<front>, <owners>`. The walking skeleton gets its own section, under the developer who builds it.
+- Write one section per front, named `<front>, <owners>`. Milestone 0 gets its own section, under the developer who builds it. When the phase has no milestone 0, leave out its milestone line and section.
 - Label each task with the feature slug and its story ID, such as `checkout-flow US-02`, and append `, Could` to a Could item. A task label never contains `:`, because Mermaid reads the first colon as the start of the task metadata.
 - A derived task is work a milestone needs that no slug covers, such as a second batch. Give it a plain label, and name its source in the assumptions.
-- Chain tasks with `after`. The first tasks after the skeleton use `after skel`. `after a b` starts after the later of `a` and `b`. Take the order from the front dependencies, the contracts, and the milestone outcomes, because STORIES.md records no dependencies.
+- Chain tasks with `after`. The first tasks after milestone 0 use `after skel`. With no milestone 0, they start on the kickoff date. `after a b` starts after the later of `a` and `b`. Take the order from the front dependencies, the contracts, and the milestone outcomes, because STORIES.md records no dependencies.
 - Tag every task on the Must chain to the demo with `crit`, which renders it orange.
 - Put Could items in a developer's waiting gaps, so a Could never delays a Must.
 - At a checkpoint, tag finished tasks `done` and running tasks `active`.
@@ -218,8 +224,9 @@ Roadmap: <link to ROADMAP.md>. Each line records one decision that changes somet
 - Pick the one tag from the legend that fits. Write tags uppercase and in English in every project, so a `grep` for the tag finds them.
 - Write the connecting words and the slot text in the confirmed output language. In Portuguese the formula reads: `No contexto de *<desafio>*, escolhemos *<solução>* para obter *<benefício>*, aceitando *<trade-off>*.`
 - Write directly, in active voice, and start each slot with the action, such as "use Redis" or "encrypt passwords". The roadmap body holds the details, such as the fronts, the milestone dates, and the providers.
-- Give each decision the next free ID, `D-01`, `D-02`, and so on. An ID never changes and is never reused.
+- Give each decision the next free ID, `D-01`, `D-02`, and so on, counting the archived phases too. An ID never changes and is never reused.
 - In both Active and Replaced, add a `### <YYYY-MM-DD>` heading per date, oldest first. Under the date, add one group per occasion: a meeting, a checkpoint, or one person deciding. Name the occasion and who agreed once, in the group's lead line.
 - When a decision replaces an older one, tag the new line `[CHANGED]` and end it with `(replaces D-<NN>)`. Move the older line unchanged to Replaced, under its original date and occasion, and end it with `(replaced by D-<NN>)`.
-- When `.agents/skills/feature-workflow/` is installed and an agreed decision also binds code, such as a datastore, a module layout, or a banned library, write a `team D-<NN>` constraint record for it in the same session with feature-workflow's `constraints.py new --origin "team D-<NN>"`, by `.agents/skills/feature-workflow/references/constraints.md`. Give it the scopes and paths it applies to. A `[CHANGED]` line that replaces such a decision gets a new record created with `--replaces <old-slug>`, which deletes the old record. `DECISIONS.md` stays for people and is never a coding constraint.
+- When `.github/skills/feature-workflow/` is installed and an agreed decision also binds code, such as a datastore, a module layout, or a banned library, write a `team D-<NN>` constraint record for it in the same session with feature-workflow's `constraints.py new --origin "team D-<NN>"`, by `.github/skills/feature-workflow/references/constraints.md`. Give it the scopes and paths it applies to. A `[CHANGED]` line that replaces such a decision gets a new record created with `--replaces <old-slug>`, which deletes the old record. `DECISIONS.md` stays for people and is never a coding constraint.
+- At a phase close, Replaced lines and the decisions the team archives move unchanged to `phases/<NN>-<slug>/DECISIONS.md`, as [Close the phase](../SKILL.md#close-the-phase) describes. That file follows this template, and its Roadmap link points at the archived `ROADMAP.md`.
 - The tag emojis, the bold tag, and the italic slots are functional markers of this format. Keep them when you apply `unslop`, whose rules on decorative emojis and boldface do not apply to decision lines.

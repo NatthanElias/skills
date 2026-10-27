@@ -5,7 +5,7 @@ from pathlib import Path
 
 import harness
 
-ORDER = ("workflow-setup", "generate-mvp-roadmap", "feature-workflow")
+ORDER = ("workflow-setup", "generate-roadmap", "feature-workflow")
 USER_ONLY = ("workflow-setup",)
 # Context: these dependencies are global skills of the same harness, installed outside the repository.
 GLOBAL_REQUIRES = {"workflow-setup": ("grill-me",), "feature-workflow": ("orchestrate",)}

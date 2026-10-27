@@ -8,7 +8,7 @@ Coding constraints are one file per record under `.specs/constraints/`. [Constra
 
 ### A change the roadmap records
 
-When `docs/roadmap/DECISIONS.md` exists, a plan decision that changes something the roadmap records is a blocker: the goal or demo story, the deadline or a milestone date, the team or a front's owner, the scope or cut line, or a contract between fronts. Name the item and the fronts it affects, and ask the user to agree it with them. Once agreed, append its line to `DECISIONS.md` by the decision log rules in `.claude/skills/generate-mvp-roadmap/references/templates.md`. When the change binds code, also add or supersede its `team D-NN` record by [constraints](constraints.md). `DECISIONS.md` is for people, never a coding constraint.
+When `docs/roadmap/DECISIONS.md` exists, a plan decision that changes something the roadmap records is a blocker: the goal or demo story, the deadline or a milestone date, the team or a front's owner, the scope or cut line, or a contract between fronts. Name the item and the fronts it affects, and ask the user to agree it with them. Once agreed, append its line to `DECISIONS.md` by the decision log rules in `.claude/skills/generate-roadmap/references/templates.md`. When the change binds code, also add or supersede its `team D-NN` record by [constraints](constraints.md). `DECISIONS.md` is for people, never a coding constraint.
 
 ## Handoff
 

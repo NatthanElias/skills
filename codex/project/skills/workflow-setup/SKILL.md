@@ -19,7 +19,7 @@ Done when the team has confirmed the repository root and its ID.
 
 Read the repository's instructions, manifests, CI files, document indexes, and `docs/harness/setup-selection.json` when present. Suggest the brief, the repository row, task routes, and the check command from them. A new repository with no build or test command records its check as a validation gap; its first feature adds the commands. Ask only for decisions the team owns.
 
-The project skills in `.agents/skills/` are the candidates: `workflow-setup`, `generate-mvp-roadmap`, and `feature-workflow`. Setup uses the global `$grill-me` skill, and feature-workflow uses the global `$orchestrate` skill. Setup warns when either is missing from this machine. Select `feature-workflow` only when the team wants it.
+The project skills in `.agents/skills/` are the candidates: `workflow-setup`, `generate-roadmap`, and `feature-workflow`. Setup uses the global `$grill-me` skill, and feature-workflow uses the global `$orchestrate` skill. Setup warns when either is missing from this machine. Select `feature-workflow` only when the team wants it.
 
 Find the team standards skill or document and propose a Team additions line that names it. When none exists, tell the team to supply one, and offer `$writing-for-agents` to turn their standards into a skill.
 
@@ -46,7 +46,7 @@ Write the accepted choices to `docs/harness/setup-selection.json`:
  "brief": "Catalog API stores product records.\nIts web client edits them over HTTP.",
  "repositories": {"catalog-api": {"role": "Product records", "start": "src/"}},
  "routes": [{"task": "Change product intake", "start": "src/intake/"}],
- "skills": ["workflow-setup", "generate-mvp-roadmap", "feature-workflow"],
+ "skills": ["workflow-setup", "generate-roadmap", "feature-workflow"],
  "checks": {"catalog-api": "npm test"}, "feature_root": ".specs/features/<feature>/",
  "delegation": "Helpers allowed; parallel writes not allowed",
  "commits": "Local commits under an approved plan; push, force-push, deploy, and production data need explicit approval",

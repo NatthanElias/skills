@@ -8,7 +8,7 @@ This folder holds the Codex port of the VS Code project workflow for one Git rep
 | --- | --- |
 | `workflow-setup` | Interviews you about the repository and writes the always-on `AGENTS.md` and the setup records under `docs/harness/`. |
 | `feature-workflow` | Takes one feature from spec through plan, build, and independent review, with records under `.specs/`. |
-| `generate-mvp-roadmap` | Splits a PoC or MVP with a fixed deadline into parallel developer fronts before feature planning, and updates the roadmap at milestones. |
+| `generate-roadmap` | Splits a PoC, an MVP, or the next phase of an existing project, with a fixed deadline, into parallel developer fronts before feature planning. It updates the roadmap at milestones and archives each finished phase. |
 
 | Agent | File | Role |
 | --- | --- | --- |

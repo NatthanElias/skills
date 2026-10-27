@@ -48,7 +48,7 @@ The `vscode/.github/` bundle is the source of the shared skills. Each harness fo
 | `natthan-workflow` | Global | Codex, Claude Code, Antigravity | Harness-native |
 | `workflow-setup` | Project | VS Code, Codex, OpenCode, Claude Code | Bundle port |
 | `feature-workflow` | Project | VS Code, Codex, OpenCode, Claude Code | Bundle port |
-| `generate-mvp-roadmap` | Project | VS Code, Codex, OpenCode, Claude Code | Bundle port |
+| `generate-roadmap` | Project | VS Code, Codex, OpenCode, Claude Code | Bundle port |
 | `workspace-analysis` | Project | VS Code | Bundle only |
 | `orchestrate-vscode` | Project | VS Code | Bundle only |
 
