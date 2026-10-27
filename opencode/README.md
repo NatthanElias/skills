@@ -11,11 +11,7 @@ python3 scripts/install_opencode.py --target ~/.config/opencode/skills --dry-run
 python3 scripts/install_opencode.py --target ~/.config/opencode/skills
 ```
 
-For a project installation:
-
-```bash
-python3 scripts/install_opencode.py --target /path/to/project/.opencode/skills
-```
+These are global skills; install them only into `~/.config/opencode/skills/`. Repositories get the [project collection](project/README.md) instead.
 
 The installer needs Python 3. It copies the full collection, skips identical copies, and refuses conflicting destinations before copying anything. Back up conflicting skills outside discovery folders before retrying. Installation creates independent copies; back up an installed copy and reinstall after editing its source here.
 

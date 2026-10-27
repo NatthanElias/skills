@@ -11,7 +11,7 @@ python3 scripts/install_antigravity.py --target ~/.gemini/config/skills
 for skill in ~/.gemini/config/skills/*/; do ln -sfn "${skill%/}" ~/.gemini/antigravity-cli/skills/; done
 ```
 
-Add `--dry-run` to preview the install. For a project installation, target the workspace's `.agents/skills/`. In the CLI, run `/skills reload` after installing. See the [skill format guide](https://antigravity.google/docs/skills).
+Add `--dry-run` to preview the install. These are global skills; Antigravity has no project collection. In the CLI, run `/skills reload` after installing. See the [skill format guide](https://antigravity.google/docs/skills).
 
 ## Invoke
 

@@ -12,11 +12,8 @@ python3 scripts/install_codex.py --target ~/.agents/skills --dry-run
 python3 scripts/install_codex.py --target ~/.agents/skills
 ```
 
-For a project installation, specify that project's skill folder:
-
-```bash
-python3 scripts/install_codex.py --target /path/to/project/.agents/skills
-```
+These are global skills; install them only into `~/.agents/skills`.
+Repositories get the [project collection](project/README.md) instead.
 
 Codex discovers user skills in `~/.agents/skills` and project skills in
 `.agents/skills`, according to the [official skill documentation](https://learn.chatgpt.com/docs/build-skills).

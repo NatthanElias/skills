@@ -11,11 +11,7 @@ python3 scripts/install_claude.py --target ~/.claude/skills --dry-run
 python3 scripts/install_claude.py --target ~/.claude/skills
 ```
 
-For a project installation:
-
-```bash
-python3 scripts/install_claude.py --target /path/to/project/.claude/skills
-```
+These are global skills; install them only into `~/.claude/skills/`. Repositories get the [project collection](project/README.md) instead.
 
 The installer skips identical copies and refuses conflicting destinations before copying anything. Back up a conflicting skill outside `~/.claude/skills/` before retrying. A personal skill overrides a project skill of the same name. Start a fresh session to pick up changes.
 
