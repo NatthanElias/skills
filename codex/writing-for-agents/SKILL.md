@@ -1,9 +1,9 @@
 ---
 name: writing-for-agents
-description: Write documents agents consume. Use when creating or editing skills, agent definitions, AGENTS.md, other instruction files, or references those documents link to.
+description: Writing documents for AI AGENTS. Use when creating or editing skills, agent definitions, instruction files, or documents they link to.
 ---
 
-Reference for writing any document an agent consumes: a skill, an agent definition, an `AGENTS.md`, another client's instruction file, or a document reached by a pointer. The packaging differs; the writing does not: the same levers make each one predictable, since the agent takes the same _process_ every run rather than producing the same output.
+Reference for writing any document an agent consumes: a skill, an agent definition, `AGENTS.md`, a doc reached by a pointer. The packaging differs; the writing does not: the same levers make each one predictable, since the agent takes the same _process_ every run rather than producing the same output.
 
 When the document you're writing is a skill, read [`SKILL-MECHANICS.md`](SKILL-MECHANICS.md) for frontmatter, invocation choice, and router skills.
 
@@ -80,21 +80,16 @@ You win twice: fewer tokens, and a sharper hook for the agent to hang its thinki
 - Check every line for **relevance**: does it still bear on what the document does? A line loses relevance by never bearing on the task (mere exposition, or a branch that should be disclosed) or by going stale as the behaviour or world it describes changes. Shorter documents are easier to keep relevant. Without a pruning discipline the default fate is **sediment**: stale layers that settle because adding feels safe and removing feels risky, until you must core down through them to find what is still live.
 - Hunt **no-ops** sentence by sentence: an instruction the model already obeys by default pays load to say nothing. The test (does it change behaviour versus the default?) is model-relative, not reader-relative: two people disagreeing about a no-op disagree about the default, and settle it by running the document, not by debate. When a sentence fails, delete the whole sentence rather than trim words from it. The test also grades leading words: a word too weak to beat the default (_be thorough_ when the agent is already thorough-ish) is a no-op, and the fix is a stronger word (_relentless_), not a different technique.
 
-
 ## In Codex
 
-Place rules by owner. Use `AGENTS.md` for repository instructions, skills for conditional procedures, references for domain facts, and supported Codex configuration for client settings. Use a user skill location for global availability, not a project's `.github/skills/` directory.
+- Place each rule by owner: `AGENTS.md` for repository instructions, skills for branch-specific procedures, references for domain facts, and Codex configuration for client settings.
+- User skills live in `~/.agents/skills/` and project skills in `.agents/skills/`, from the working directory up to the repository root. Codex does not merge same-named skills, and both copies can appear in the selector, so keep one copy of each name. `[[skills.config]]` entries in `~/.codex/config.toml` disable a skill. Keep supporting-file links relative to their document.
+- Use only the question, subagent, and thread tools the client exposes, and match their schemas and mode restrictions. A worker's file and command limits are rules, not an OS sandbox. Bound delegated work with exact scope, permitted side effects, evidence to return, and whether workers may spawn agents.
+- Apply `$unslop` to every line you write.
+- After changing skills, run [scripts/check_harness.py](scripts/check_harness.py) against their directories. From this skill's directory, for example:
 
-Resolve paths through the active catalog. This installation uses both `~/.codex/skills/` and `~/.agents/skills/`; avoid duplicate names across them. `CODEX_HOME` or the runtime may change the actual locations. Keep supporting-file links relative to the document that contains them.
+  ```bash
+  python3 scripts/check_harness.py . /absolute/path/to/another-changed-skill
+  ```
 
-Use only the question, subagent, and thread tools exposed by the client. Match their schemas and mode restrictions. A prompt's file and command limits constrain worker behavior; they do not create an OS sandbox. Bound delegated work with exact scope, permitted side effects, evidence to return, and whether workers may spawn agents.
-
-Apply `$unslop` to every line you write without adding personality to instructions or weakening their constraints.
-
-After changing skills, run [scripts/check_harness.py](scripts/check_harness.py) against their directories. From this skill's directory, for example:
-
-```bash
-python3 scripts/check_harness.py . /absolute/path/to/another-changed-skill
-```
-
-The checker uses Python 3 and PyYAML. With no arguments it checks this skill. Use `--global --names skill-name other-skill` to select installed global skills. Use `--global` alone for all non-hidden skills in the discovered user roots. It checks frontmatter, Codex metadata, duplicate names, and local links. Structural validation does not prove behavior, model availability, tool availability, or OS isolation. Exercise new scripts and important workflow branches separately.
+  It needs Python 3 and PyYAML. With no arguments it checks this skill; `--global` checks the user skill roots, and `--names` selects skills by name. It prints `Harness OK` or the first invalid frontmatter, Codex metadata field, duplicate name, or broken link. A pass does not prove behavior, tool availability, or isolation. Exercise new scripts and important branches separately.

@@ -7,7 +7,7 @@ The skill-specific branch of [`writing-for-agents`](SKILL.md): what changes when
 Two choices, trading the two loads:
 
 - A **model-invoked** skill keeps a `description`, so the agent can fire it autonomously, and other skills can reach it. You can still type its name: model-invocation always _includes_ user reach; a description only ever adds agent discovery, never removes the human's. The description is the skill's top-level context pointer, forced to stay loaded at all times: permanent context load in exchange for discoverability. A model-invoked skill whose content is all reference is also one home for shared reference: another skill can invoke it, so reference needed by several skills lives in one place. Mechanics: omit `disable-model-invocation`, and write a model-facing description carrying the trigger branches (the pointer-writing rules in `SKILL.md` apply in full).
-- A **user-invoked** skill strips the description from the agent's reach: only the human typing its name can invoke it, and no other skill can. Zero context load, but it spends cognitive load: you are the index that must remember it exists. Mechanics: set `disable-model-invocation: true`; the `description` becomes human-facing: a one-line summary, trigger lists stripped.
+- A **user-invoked** skill strips the description from the agent's reach: only the human typing its name can invoke it, and no other skill can. Zero context load, but it spends cognitive load: you are the index that must remember it exists. Mechanics: set `disable-model-invocation: true`. The skill stays registered, and the user loads it by naming `@skill-id`. The `description` becomes human-facing: a one-line summary, trigger lists stripped.
 
 Pick model-invocation only when the agent must reach the skill on its own, or another skill must. If it only ever fires by hand, make it user-invoked and pay no context load.
 
@@ -20,3 +20,11 @@ The invocation cut of splitting (the sequence cut lives in `SKILL.md`): split of
 ## Router skills
 
 When user-invoked skills multiply past what you can remember, that piled-up cognitive load is cured by a **router skill**: one user-invoked skill that names the others and when to reach for each, so the human has one skill to remember instead of many. It can only hint, never fire them: user-invoked skills have no description, so nothing but the human can reach them.
+
+## OpenCode packaging
+
+Each skill directory contains `SKILL.md` with YAML frontmatter between `---` lines. OpenCode v2 takes the skill ID from the directory name; the frontmatter `name` is a display label, so keep it equal to the directory name. A skill without a `description` is not advertised to the model. Use lowercase kebab-case IDs of 1 to 64 characters for portability.
+
+Supported fields are `name`, `description`, `disable-model-invocation`, `metadata`, `license`, and `compatibility`. `metadata` key `opencode/autoinvoke` set to `"false"` also hides a skill from the model, and it wins over `disable-model-invocation` when both are set. Other fields are ignored, and `agents/openai.yaml` is Codex metadata that OpenCode does not read.
+
+Global skills use `~/.config/opencode/skills/`; project skills use `.opencode/skills/`. Skill access follows `skill` rules in `permissions`: `allow`, `ask`, or `deny`, with the last matching rule winning. A denied skill is hidden and cannot load.

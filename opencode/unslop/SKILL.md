@@ -1,6 +1,6 @@
 ---
 name: unslop
-description: Cut AI tells from any writing. Must always apply.
+description: Cut AI tells from writing. Use when writing or reviewing documentation, instructions, or assistant-written prose.
 ---
 
 # Unslop
@@ -10,20 +10,19 @@ Edit text to remove AI patterns and add human voice.
 ## Process
 
 1. Scan for the patterns below.
-2. Rewrite. Preserve meaning, match intended tone.
-3. Add soul (see next section).
+2. Rewrite. Preserve meaning, match intended tone. Keep an unverified claim as uncertain as the source left it.
+3. Add soul where voice fits. See the next section.
 4. Self-audit: "What makes this obviously AI generated?" Fix remaining tells.
 
 ## Adding soul
 
-Removing patterns is half the job. Sterile, voiceless writing is just as obvious.
+Removing patterns is half the job. Sterile, voiceless writing is just as obvious. Apply this section to prose where voice fits, such as explanations, replies and messages. Skip it for reference pages, procedures and agent instructions.
 
 - **Have opinions.** React to facts instead of neutrally listing pros and cons.
 - **Vary rhythm.** Short sentences. Then longer ones that take their time. Mix it up.
 - **Acknowledge complexity.** "Impressive but also kind of unsettling" beats "impressive."
 - **Use "I" when it fits.** First person isn't unprofessional.
 - **Let some mess in.** Perfect structure looks machine-made.
-- **Be specific.** Not "this is concerning" but "there's something unsettling about agents churning away at 3am."
 
 ## Patterns to detect and fix
 
@@ -38,7 +37,7 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 
 ### Language
 
-7. **AI vocabulary.** Additionally, crucial, delve, enduring, enhance, fostering, garner, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore, vibrant. Replace with plain words.
+7. **AI vocabulary.** Additionally, crucial, delve, enduring, enhance, garner, interplay, intricate, landscape (abstract), tapestry (abstract), underscore. Replace with plain words.
 8. **Fancy ways to say "is".** "serves as", "stands as", "boasts", "features". Just say "is" or "has".
 9. **"Not just X, but Y."** State the point directly instead.
 10. **Rule of three.** Forcing ideas into groups of three. Use the natural number.
@@ -47,8 +46,8 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 
 ### Style
 
-13. **Em dash overuse.** Avoid em dashes entirely. Use periods or commas only (no parentheses, no en dashes, no hyphen-as-dash substitutes). Em dashes are an AI tell, and reaching for parentheses instead just trades one tell for another. If a thought needs separation, end the sentence or use a comma.
-14. **Colon overuse.** Colons are fine before a list or example. Not as mid-sentence connectors. "If you're coming from traditional automation: instead of registering event handlers, you describe conditions" adds nothing with the colon. Rewrite to let the point stand on its own without comparison framing. "Describing when the scheduler should fire works best as plain English." Same meaning, no crutch punctuation.
+13. **Em dash overuse.** Separate a thought with a period or a comma. Em dashes, en dashes, hyphens used as dashes and parentheses are all tells, so replace each one.
+14. **Colon overuse.** Colons are fine before a list or example. Not as mid-sentence connectors. "If you're coming from traditional automation: instead of registering event handlers, you describe conditions" becomes "Describe when the scheduler should fire in plain English."
 15. **Boldface overuse.** Don't bold every proper noun or acronym.
 16. **Inline-header lists.** The tell is a bold label and colon that restates the line: "**Performance:** Performance improved...". Convert those to prose. A bold lead-in that ends in a period, names the item, and is followed by genuinely new detail ("**Schema in TypeScript.** Tables live in one file.") is fine, not a tell.
 17. **Title case headings.** Use sentence case.
@@ -63,7 +62,7 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 
 ### Filler
 
-23. **Filler phrases.** "In order to" becomes "To". "Due to the fact that" becomes "Because". "It is important to note that" gets deleted.
+23. **Filler phrases.** "In order to" becomes "To". "Due to the fact that" becomes "Because". "In the event that" becomes "If". "It is important to note that" gets deleted.
 24. **Excessive hedging.** "could potentially possibly be argued that it might" becomes "may".
 25. **Generic conclusions.** "The future looks bright." State specific plans or facts.
 
@@ -74,7 +73,7 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 ### Plain speech
 
 27. **Say what it does, not how it feels.** "the database stays close at hand", "SQL you can read", "types that follow your schema" name a feeling. The fix names the mechanism or a number: "`.toSQL()` returns the exact string sent to the database", "a column rename fails the build". Ask what the sentence tells the reader to do or know, then write that. If you can't restate it as a concrete instruction, fact, or number, cut it. One more check: if the sentence could appear unchanged in another project's docs, it says nothing about this one. Cut it.
-28. **Shorten or split dense sentences.** If the reader has to backtrack to parse a sentence, break it in two or drop clauses. One idea per sentence.
+28. **Shorten or split dense sentences.** If the reader has to backtrack to parse a sentence, or it runs past about 25 words, break it in two or drop clauses. One idea per sentence.
 29. **Active voice.** Prefer it. Catch "is/are/was/were + past participle" and name the actor: "queries are validated" becomes "the compiler validates queries", "the file is parsed by the loader" becomes "the loader parses the file". Passive is fine only when the actor is unknown or genuinely doesn't matter.
 30. **Cut adverbs, or use a stronger verb.** "runs quickly" becomes "is fast" or the number. "significantly improves" becomes the measured delta. An adverb propping up a weak verb means the verb is wrong.
-31. **Prefer the plain word.** "utilize" becomes "use", "leverage" becomes "use", "facilitate" becomes "help", "numerous" becomes "many", "in the event that" becomes "if". The fancier synonym is rarely clearer.
+31. **Prefer the plain word.** "utilize" becomes "use", "leverage" becomes "use", "facilitate" becomes "help", "numerous" becomes "many". The fancier synonym is rarely clearer.

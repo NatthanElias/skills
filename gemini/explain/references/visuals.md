@@ -1,49 +1,41 @@
-# Visuals and teaching
+# Visual explanations
 
-Read this reference when teaching a topic in depth, or when producing a diagram, image or interactive HTML explainer. Style rules live in [../SKILL.md](../SKILL.md).
+Use this lens for teaching, diagrams, images, and interactive HTML. [Explain](../SKILL.md) owns the response length and writing rules.
 
-## Use the environment's tools
+## Choose a supported medium
 
-Use whatever diagram, image-generation, HTML preview, browser or file-creation tools the active environment provides. Check what exists before you offer a medium. Mermaid in Markdown renders in many chat clients. When nothing renders, save the file and give its path.
+Check the tools available in the current Antigravity session before offering a preview, image, or browser interaction.
 
-## Teach as a conversation
-
-1. Pick the few things the reader should walk away understanding. Base them on why they ask (changing, reviewing, debugging or learning) and on what they already know, as the conversation shows. Skip what they know.
-2. Start with a plain definition. Name the thing, give its common name if it has one, and say what it is in general terms. Then tie it to this case: "In Morfe, `X` uses this to ...".
-3. Explain each part so it clicks. Say what problem it solves and how it works. Walk through what happens as someone uses it. A list of functions and constants is reference material, and teaching explains the idea behind them.
-4. Give the smallest complete answer, then stop and let the reader respond. Add layers when they ask. Offer to go deeper or move on, and follow their lead.
-5. Say each point plainly. Skip quizzes, requests to repeat things back, and labels that flag a part as hard or important.
-6. Keep the confidence language from [why.md](why.md) intact. Its hedges are findings.
-
-## Choose the medium by the idea
-
-| Idea | Medium |
+| The reader needs to understand | Use |
 | --- | --- |
-| One small change or a single mechanism | Prose |
-| A flow, sequence or structure where labels carry the meaning | Mermaid diagram series |
-| A spatial idea, such as layout, overlap or a before-and-after position | Generated whiteboard-style image with a few short labels |
-| An idea the reader learns by changing inputs and watching state | Disposable interactive HTML |
+| A small change or one mechanism | Prose or a short walkthrough |
+| Control flow, message order, or structure | Mermaid diagrams in Markdown |
+| Position, overlap, or layout | A captured screen or an illustrative image, when the tools support it |
+| How inputs change state or output | A self-contained interactive HTML file |
 
-A single simple point needs no figure. Draw only from facts you have. Mark any illustrative or simulated value as such, and never draw a screen you did not capture.
+State when a diagram is source text rather than a confirmed rendered preview. If no preview tool exists, link the saved file and explain how to open it. Label simulations and illustrative values. Describe a screen as observed only when it was captured.
 
-## Diagram build-up rule
+## Teach in layers
 
-For three or more moving parts, draw a short series of diagrams. Each diagram redraws the previous one and adds one part, so the reader watches the system assemble. To teach A to B to C, draw A to B, then redraw with C, then redraw with the return edge or the next piece. One all-at-once chart is reference material.
+Use the conversation to identify the reader's goal and existing knowledge. Start with a plain definition, then connect it to the project.
 
-- At most about six boxes per diagram.
-- Short labels, at most about eight words, written as plain words.
-- Connect every box. A status list or a set of unconnected boxes belongs in text.
-- State each fact once, in the text or in a diagram.
-- The build-up rule applies to generated images too.
+Explain the problem each part solves and walk through a concrete use. Give the smallest complete layer, then let the reader choose the next one through `ask_question`. Keep the uncertainty labels from [Rationale and history](why.md).
 
-## Disposable interactive HTML
+For three or more interacting parts, build a diagram series. Start with the first relationship, redraw it with the next part, and add later edges as they become relevant.
 
-- Write one self-contained file with inline CSS and JS. Use no network requests and no build step.
-- Pick controls that expose the idea, such as tabs per stage, a slider for an input, a state table that updates per step, or a before-and-after toggle.
-- Fill it from verified facts, and keep the `file:line` anchors from the explanation visible in the page.
-- Save it to the environment's artifact or scratch location, or a temporary path. Write it into the repository only when the user asks.
-- Render it with the environment's preview tool when one exists. Otherwise give the path to open in a browser.
+- Keep each diagram to roughly six connected boxes with short labels.
+- Put disconnected facts in prose.
+- Assign each fact to text or a visual, so neither repeats the other.
+- Use the same staged build-up for illustrative images.
 
-## Done when
+## Make HTML disposable
 
-Each visual adds one idea the text alone would carry less well, and the reader can trace every label back to a fact or anchor.
+Write one file with inline CSS and JavaScript. Keep it offline, without external assets, network requests, or a build step. Choose controls that expose the mechanism, such as a step button, input slider, or before-and-after toggle.
+
+Base the content on verified facts. Keep source anchors visible in the page, and distinguish simulated state from observed results.
+
+Save the file in the session's artifact or scratch directory. Add it to the repository only when the user requests that destination.
+
+Use a browser or preview tool when available. Verify that the file opens and that its controls demonstrate the claimed behavior. Otherwise provide the file link and state that rendering and interaction remain unchecked.
+
+Done when each visual explains something prose alone would make harder to follow, and each factual label can be traced to evidence.
