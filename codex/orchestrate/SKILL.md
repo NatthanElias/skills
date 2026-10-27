@@ -40,7 +40,7 @@ T3 mode dispatches each persona to its own harness through T3 Code Orchestrator 
 | Scout | OpenCode / `opencode` | `opencode/gpt-6-luna` | `{"variant": "xhigh"}` |
 | Builder | Claude Code / `claudeAgent` | `claude-sonnet-5-5` | `{"effort": "high"}` |
 | Oracle | Claude Code / `claudeAgent` | `claude-opus-5-5` | `{"effort": "high"}` |
-| Verifier | Codex / `codex` | `gpt-6.1-sol` | `{"reasoningEffort": "medium", "serviceTier": "default"}` |
+| Verifier | Codex / `codex` | `gpt-6.1-sol` | `{"reasoningEffort": "high", "serviceTier": "default"}` |
 
 Spawn only these configurations. The roster replaces the custom-agent preference and the native table. Before any dispatch, read [references/t3.md](references/t3.md) for capability checks, the exact `delegate_task` arguments, identity checks, and task tracking. Dispatch every persona, the Codex Verifier included, with `delegate_task` and explicit `target.options`. Options written only in the brief configure nothing.
 
