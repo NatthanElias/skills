@@ -34,6 +34,16 @@ repository, back up its installed copy and reinstall to apply the update.
 If Codex does not pick up an installed skill, restart it. Invoke a skill by its
 name, for example `$grill-me`. Existing explicit-only policies are preserved.
 
+## Orchestrate in T3 Code
+
+When Codex runs inside T3 Code and the session exposes `delegate_task`,
+`orchestrate` switches to T3 mode. It then dispatches the Scout to OpenCode
+(`gpt-6-luna`), the Builder and the Oracle to Claude Code (Sonnet 5.5 and
+Opus 5.5), and the Verifier to Codex (`gpt-6.1-sol`). Outside T3 it keeps
+its native Codex roster. A repository can override the T3 roster, or select
+native mode, in its `AGENTS.md`. The T3 mechanics are in
+[`orchestrate/references/t3.md`](orchestrate/references/t3.md).
+
 ## Validate
 
 The included checker requires Python 3 and PyYAML:

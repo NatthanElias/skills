@@ -29,6 +29,25 @@ Respect the current slot limit. Split the work into the smallest pieces that eac
 
 ## Choose the worker
 
+Use T3 mode when the session exposes T3 Code's `delegate_task` and `orchestrator_capabilities` tools, and native mode otherwise. The repository's always-on instructions may override the T3 roster or select native mode; follow that override.
+
+### T3 mode
+
+T3 mode dispatches each persona to its own harness through T3 Code Orchestrator v2:
+
+| Persona | Harness / `providerInstanceId` | `model` | `target.options` |
+|---|---|---|---|
+| Scout | OpenCode / `opencode` | `opencode/gpt-6-luna` | `{"variant": "xhigh"}` |
+| Builder | Claude Code / `claudeAgent` | `claude-sonnet-5-5` | `{"effort": "high"}` |
+| Oracle | Claude Code / `claudeAgent` | `claude-opus-5-5` | `{"effort": "high"}` |
+| Verifier | Codex / `codex` | `gpt-6.1-sol` | `{"reasoningEffort": "medium", "serviceTier": "default"}` |
+
+Spawn only these configurations. The roster replaces the custom-agent preference and the native table. Before any dispatch, read [references/t3.md](references/t3.md) for capability checks, the exact `delegate_task` arguments, identity checks, and task tracking. Dispatch every persona, the Codex Verifier included, with `delegate_task` and explicit `target.options`. Options written only in the brief configure nothing.
+
+When a roster provider, model, or option is unavailable, report the mismatch and ask the user whether to switch models, use native mode, do the work in the main session, or wait. Never substitute silently.
+
+### Native mode
+
 Prefer an existing custom agent whose description names this work. Dispatch it by its exact name and keep its configured model. If two fit, or the fit is doubtful, ask the user with the permitted question tool. Otherwise use the personas below.
 
 Choose model and effort based on the individual assignment's difficulty.
@@ -41,9 +60,13 @@ Choose model and effort based on the individual assignment's difficulty.
 | Oracle | `gpt-6-astra` | `high` only |
 | Verifier | `gpt-6-astra` | `medium` |
 
-Spawn only these configurations. Scouts, Builders and Verifiers are leaves. Oracle may spawn read-only Scouts within its assigned scope, using the Scout configurations above; it may not spawn Builders or other Oracles.
+Spawn only these configurations.
 
 When the client refuses or lacks a requested model, try the next configuration the table allows for that persona. When none remains, ask the user whether to switch models, do the work in the main session, or wait. Never substitute a model silently.
+
+### Spawning authority
+
+Scouts, Builders and Verifiers are leaves. Oracle may spawn read-only Scouts within its assigned scope, using the active mode's Scout configuration; it may not spawn Builders or other Oracles.
 
 ### Oracle
 
@@ -161,13 +184,21 @@ Dispatch a writer only after its checks and proof commands are settled and its p
 
 Assign each file to one active writer at a time, including yourself, even when edits would touch separate sections. Other agents may read it. A worker that needs to edit a file outside its ownership asks you to arrange a handoff. Transfer ownership only after the previous writer has stopped editing that file.
 
-Pass paths and the context needed for the assignment. Default to `fork_turns: "none"` with explicit `model` and `reasoning_effort`. Use a limited history fork only when needed and supported with those overrides. Avoid full-history forks, which inherit the root's model.
+Pass paths and the context needed for the assignment. In native mode, default to `fork_turns: "none"` with explicit `model` and `reasoning_effort`. Use a limited history fork only when needed and supported with those overrides. Avoid full-history forks, which inherit the root's model.
+
+In T3 mode, the child receives only `delegate_task.task` and loads its own harness's skills from the checkout. Open every brief with this preamble, then the persona instructions:
+
+```text
+You are a <persona> worker dispatched by a Codex orchestrator. Follow only this brief. Do not start workflow or orchestration skills, such as orchestrate, feature-workflow, workflow-setup, or generate-roadmap, and dispatch no agents unless this brief allows it. Never switch branches or revisions or create a branch. If you need a decision, stop and return the question.
+```
 
 Immediately before spawning, name the task, persona, requested model, effort, and assignment in a short notice. Proceed unless the user requires spawn approval or a spending limit needs resolution. Distinguish the requested configuration from any runtime identity actually reported.
 
 ## Coordinate and accept results
 
-Continue useful work outside the worker's write scope. Steer running workers with `send_message`. If you interrupt a worker, inspect its partial changes before assigning replacement work; interruption does not undo edits.
+Continue useful work outside the worker's write scope. In T3 mode, track and cancel tasks as [references/t3.md](references/t3.md) describes, and start each follow-on assignment or review round with a new `delegate_task` call; the native tools in the next three paragraphs do not apply.
+
+In native mode, steer running workers with `send_message`. If you interrupt a worker, inspect its partial changes before assigning replacement work; interruption does not undo edits.
 
 Reuse a worker through `followup_task` when the next assignment directly depends on its context and fits its persona and model. Otherwise, consider whether a fresh worker is worthwhile. Check existing assignments before creating another to avoid duplicate work.
 
