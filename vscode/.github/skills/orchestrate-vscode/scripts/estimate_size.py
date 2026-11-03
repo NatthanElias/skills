@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 # The only place the dispatch and review limits are set.
-FLOOR = 20_000
+FLOOR = 25_000
 CEILING = 150_000
 
 

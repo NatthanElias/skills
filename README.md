@@ -2,6 +2,8 @@
 
 Personal agent skills, grouped by harness.
 
+To learn why the workflow works the way it does, and what it asks of you, read [Bundle design](docs/design.md).
+
 ```text
 <harness>/         # codex/, opencode/, claude/ or gemini/
   <skill-name>/    # Global skill
