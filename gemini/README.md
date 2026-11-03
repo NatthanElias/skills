@@ -1,6 +1,6 @@
 # Antigravity skills
 
-Twelve skills for Google Antigravity: Antigravity ports of the shared `vscode/.github` skills, plus `orchestrate`, `escrita-academica`, `finish-session`, and `natthan-workflow`. The ports name Antigravity's `ask_question` tool. `orchestrate` dispatches workers to Codex and Claude Code through T3 Code; read its [T3 reference](orchestrate/references/t3-acp.md) before changing that workflow.
+Eleven skills for Google Antigravity: Antigravity ports of the shared `vscode/.github` skills, plus `orchestrate`, `escrita-academica`, and `finish-session`. The ports name Antigravity's `ask_question` tool. `orchestrate` dispatches workers to Codex and Claude Code through T3 Code; read its [T3 reference](orchestrate/references/t3-acp.md) before changing that workflow.
 
 ## Install
 

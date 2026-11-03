@@ -21,8 +21,7 @@ OpenCode v2 also loads global skills from `~/.claude/skills/` and `~/.agents/ski
 
 ```json
 "permissions": [
-  { "action": "skill", "resource": "finish-session", "effect": "deny" },
-  { "action": "skill", "resource": "natthan-workflow", "effect": "deny" }
+  { "action": "skill", "resource": "finish-session", "effect": "deny" }
 ]
 ```
 

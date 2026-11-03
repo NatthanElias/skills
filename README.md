@@ -25,10 +25,10 @@ Each harness folder holds two scopes. A skill directly under `<harness>/` is glo
 
 | Harness | Global skills | User discovery folder | Project collection |
 | --- | ---: | --- | --- |
-| [Codex](codex/README.md) | 12 | `~/.agents/skills/` | [`codex/project/`](codex/project/README.md) |
+| [Codex](codex/README.md) | 11 | `~/.agents/skills/` | [`codex/project/`](codex/project/README.md) |
 | [OpenCode](opencode/README.md) | 10 | `~/.config/opencode/skills/` | [`opencode/project/`](opencode/project/README.md) |
-| [Claude Code](claude/README.md) | 12 | `~/.claude/skills/` | [`claude/project/`](claude/project/README.md) |
-| [Antigravity](gemini/README.md) | 12 | `~/.gemini/config/skills/`, linked into `~/.gemini/antigravity-cli/skills/` | None |
+| [Claude Code](claude/README.md) | 11 | `~/.claude/skills/` | [`claude/project/`](claude/project/README.md) |
+| [Antigravity](gemini/README.md) | 11 | `~/.gemini/config/skills/`, linked into `~/.gemini/antigravity-cli/skills/` | None |
 
 The `vscode/.github/` bundle is the source of the shared skills. Each harness folder holds a port of them that names only that harness's tools, invocation syntax, and file locations. When a shared skill changes, change it in `vscode/.github/skills/` first, then port the change to each harness. Harness-native skills, such as each harness's `orchestrate`, are written for that harness and are not copied between folders. The VS Code bundle stays whole: install it by copying `vscode/.github/` into a repository.
 
@@ -47,7 +47,6 @@ The `vscode/.github/` bundle is the source of the shared skills. Each harness fo
 | `orchestrate` | Global | Codex, OpenCode, Claude Code, Antigravity | Harness-native, with additions from `orchestrate-vscode` |
 | `escrita-academica` | Global | Codex, OpenCode, Claude Code, Antigravity | Harness-native |
 | `finish-session` | Global | Codex, Claude Code, Antigravity | Harness-native |
-| `natthan-workflow` | Global | Codex, Claude Code, Antigravity | Harness-native |
 | `workflow-setup` | Project | VS Code, Codex, OpenCode, Claude Code | Bundle port |
 | `feature-workflow` | Project | VS Code, Codex, OpenCode, Claude Code | Bundle port |
 | `generate-roadmap` | Project | VS Code, Codex, OpenCode, Claude Code | Bundle port |

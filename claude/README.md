@@ -1,6 +1,6 @@
 # Claude Code skills
 
-Twelve skills for Claude Code: Claude Code ports of the shared `vscode/.github` skills, plus `orchestrate`, `escrita-academica`, `finish-session`, and `natthan-workflow`.
+Eleven skills for Claude Code: Claude Code ports of the shared `vscode/.github` skills, plus `orchestrate`, `escrita-academica`, and `finish-session`.
 
 ## Install
 
