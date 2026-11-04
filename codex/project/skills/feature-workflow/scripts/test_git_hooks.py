@@ -14,6 +14,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+import constraints  # noqa: E402
 import git_hooks  # noqa: E402
 import resume_note  # noqa: E402
 
@@ -208,6 +209,12 @@ class GitHooksTest(unittest.TestCase):
         result = repo.commit("not conventional", "src/a.py")
         self.assertEqual(result.returncode, 0)
         self.assertIn("missing in this checkout", result.stderr)
+
+
+class ConstraintsIndexTest(unittest.TestCase):
+    def test_index_names_no_harness_folder(self):
+        # The commit hook runs one port's check; an index rendered by another port must still pass it.
+        self.assertNotIn("/skills/", constraints.index_text([]))
 
 
 class ResumeNoteTest(unittest.TestCase):
