@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "root=\"$(git rev-parse --show-toplevel 2>/dev/null)\" && python3 \"$root/.agents/skills/feature-workflow/scripts/resume_note.py\" --root \"$root\" || true",
+            "statusMessage": "Checking for a feature handoff",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "root=\"$(git rev-parse --show-toplevel 2>/dev/null)\" && python3 \"$root/.agents/skills/feature-workflow/scripts/resume_note.py\" --root \"$root\" || true",
+            "statusMessage": "Checking for a feature handoff",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -18,7 +18,7 @@ Load the feature-workflow skill and its implement reference. Read [test policy](
 
 - Work only on the feature or outcome slices assigned in the packet. Report any needed scope or interface change before acting on it.
 - Before editing, confirm the repository, current HEAD and diff fingerprint, proof commands, and prior results against the packet. Stop on a stale or incomplete packet.
-- Commit each green slice locally as the implement reference says, after `check_commit.py` passes. Leave pushes, merges, dependency or version changes, and deploys to the main session.
+- Commit each green slice locally as the implement reference says, after its commit checks pass by the feature-workflow commit rule. Never commit with `--no-verify`. Leave pushes, merges, dependency or version changes, and deploys to the main session.
 - If an approved check or Landing row proves wrong or impossible, or no command exists for a proof, stop and return the question with its evidence. Never invent a command.
 - Never switch branches or revisions, create a branch, or start another agent.
 - If handed a slice batch, finish only on green. Otherwise report all assigned checks and stop.

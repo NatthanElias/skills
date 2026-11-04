@@ -6,7 +6,7 @@ Parts of this skill adapt **tlc-spec-lean** version 1.1.0 by Tech Leads Club (gi
 
 | Here | From tlc-spec-lean | Change |
 | --- | --- | --- |
-| `scripts/check_commit.py` | `scripts/check_commit.py` | None. Agents run it before each commit; no Git hook is installed. |
+| `scripts/check_commit.py` | `scripts/check_commit.py` | None. Agents run it before each commit, or `scripts/git_hooks.py` runs it from Git's `commit-msg` hook once the user approves installing it. |
 | `scripts/validate_execution.py`, plan and checks stages | `scripts/validate_plan.py`, `scripts/validate_checks.py` | Merged into one script with this package's complete stage. Every lean rule is kept and lean warnings stay warnings, including a missing Sources section, no numbered criteria, template Assumptions rows, and a Coverage set with no size. Added: a `Lands in:` line per criterion, exact Coverage member counts, specific proofs, a `Criteria:` line per check, repository identities, the UI flag against `Screens:`, a small-change `## Intent`, and unittest dotted selectors. The Profile line is retired and only warns. Plan headings come from `references/plan.md`. |
 | `scripts/validate_execution.py`, complete stage | `scripts/validate_verification.py` | Replaced by this package's JSON round, Git fingerprints, review sizing recomputed from `review_files`, and `verified at` / `carried from` basis markers. |
 | `scripts/selftest.py`, `scripts/fixtures/` | `scripts/selftest.py`, `scripts/fixtures/` | Rewritten for this package's formats and the three stages. The billing worked example is kept, with EARS `Lands in:` lines, this package's checks, a JSON round, and a scratch Git repository. Profile controls are replaced by review-routing and small-change controls. |

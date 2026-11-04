@@ -28,13 +28,20 @@ python3 scripts/install_project.py --harness claude --root /path/to/repository -
 python3 scripts/install_project.py --harness claude --root /path/to/repository
 ```
 
-The installer copies the skills into `.claude/skills/` and the agents into `.claude/agents/`. It skips identical copies and refuses to overwrite a different file. Then run `/workflow-setup` in the repository. `workflow-setup` sets `disable-model-invocation: true`, so only you can start it.
+The installer copies the skills into `.claude/skills/` and the agents into `.claude/agents/`. It skips identical copies and refuses to overwrite a different file. It also adds a session-start hook to `.claude/settings.json` that states the newest feature handoff when a session resumes or compacts, keeping the hooks already there. Then run `/workflow-setup` in the repository. `workflow-setup` sets `disable-model-invocation: true`, so only you can start it.
+
+Feature-workflow can also make Git run its commit checks in a clone. It asks before installing them, because they check your own commits too:
+
+```bash
+python3 .claude/skills/feature-workflow/scripts/git_hooks.py install
+```
 
 ## Validate
 
 ```bash
 python3 claude/writing-for-agents/scripts/check_harness.py claude/project/skills
 python3 claude/project/skills/feature-workflow/scripts/selftest.py
+python3 claude/project/skills/feature-workflow/scripts/test_git_hooks.py
 ```
 
 The self-test must report 0 survived after any change to a `feature-workflow` script or reference.

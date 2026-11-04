@@ -17,7 +17,7 @@ The builder budget is the ceiling of the global `/orchestrate` skill's delegatio
 3. Run focused proofs, then the relevant build and full regression gates. Record each command with its working directory, exit code, and run, failed, and skipped counts for the review packet. A new failure or lower test count needs a fix or a named baseline exception. A red gate does not close a check.
 4. Inspect each proof's assertion against the concrete claim. A call count, non-null result, or broad green suite alone does not settle a value. Record a precision gap instead of guessing.
 5. Update affected living docs and the package's existing `sync-log.md` if it has one. Write living-doc updates in plain sentences a developer can review and merge, without compressed shorthand. Leave historical discovery snapshots unchanged. Record any deviation from a criterion as `SPEC_DEVIATION` for the verifier.
-6. Commit the green slice locally in Conventional Commits form. Run `python3 .claude/skills/feature-workflow/scripts/check_commit.py --message "<message>"` first and fix every error. The feature folder is git-ignored, so the commit carries code, tests, and living docs only.
+6. Commit the green slice locally in Conventional Commits form. Check it by the commit rule in [shared rules](../SKILL.md#shared-rules) and fix every error. The feature folder is git-ignored, so the commit carries code, tests, and living docs only.
 
 In a [greenfield first feature](plan.md#greenfield-first-feature), the last slice hands the new build and test commands to setup as the plan section says.
 

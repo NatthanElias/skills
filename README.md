@@ -19,6 +19,7 @@ scripts/
   install_claude.py
   install_antigravity.py
   install_project.py
+  hooks/            # This repository's after-edit skill check
 ```
 
 Each harness folder holds two scopes. A skill directly under `<harness>/` is global: install it into the harness's user discovery folder. `<harness>/project/` is the project collection: install it into a repository with `install_project.py`. Never install one scope into the other's location.
@@ -77,5 +78,7 @@ Skills with the same name contain different harness-specific instructions. Insta
 python3 <harness>/writing-for-agents/scripts/check_harness.py <harness>
 python3 <harness>/writing-for-agents/scripts/check_harness.py <harness>/project/skills
 ```
+
+In this repository, Claude Code and Codex run the matching checker after each skill edit, through `.claude/settings.json` and `.codex/hooks.json`. Codex runs it only after you trust the project and approve the hook in `/hooks`.
 
 Bundled skills, system-managed Omarchy skills, and private harness configuration are excluded. Ported skills keep their attribution files.

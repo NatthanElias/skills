@@ -28,13 +28,20 @@ python3 scripts/install_project.py --harness codex --root /path/to/repository --
 python3 scripts/install_project.py --harness codex --root /path/to/repository
 ```
 
-The installer copies the skills into `.agents/skills/` and the agents into `.codex/agents/`. It skips identical copies and refuses to overwrite a different file. Then run `$workflow-setup` in the repository. `workflow-setup` sets `policy.allow_implicit_invocation: false` in its `agents/openai.yaml`, so only you can start it. Codex and OpenCode share `AGENTS.md` and render the same text into it, so you can set up both in one repository.
+The installer copies the skills into `.agents/skills/` and the agents into `.codex/agents/`. It skips identical copies and refuses to overwrite a different file. It also adds a session-start hook to `.codex/hooks.json` that states the newest feature handoff when a session resumes or compacts, keeping the hooks already there. Codex runs it only after you trust the project and approve the hook in `/hooks`. Then run `$workflow-setup` in the repository. `workflow-setup` sets `policy.allow_implicit_invocation: false` in its `agents/openai.yaml`, so only you can start it. Codex and OpenCode share `AGENTS.md` and render the same text into it, so you can set up both in one repository.
+
+Feature-workflow can also make Git run its commit checks in a clone. It asks before installing them, because they check your own commits too:
+
+```bash
+python3 .agents/skills/feature-workflow/scripts/git_hooks.py install
+```
 
 ## Validate
 
 ```bash
 python3 codex/writing-for-agents/scripts/check_harness.py codex/project/skills
 python3 codex/project/skills/feature-workflow/scripts/selftest.py
+python3 codex/project/skills/feature-workflow/scripts/test_git_hooks.py
 ```
 
 The self-test must report 0 survived after any change to a `feature-workflow` script or reference.

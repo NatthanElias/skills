@@ -114,4 +114,4 @@ Your decisions unblock dependent work:
 
 ## Porting to other harnesses
 
-The bundle is the canonical source, and each harness port names only its own tools and paths. The [README](../README.md) explains the porting rules and lists every skill's scope.
+The bundle is the canonical source, and each harness port names only its own tools and paths. The ports add one thing the bundle runs by hand: with your approval, `feature-workflow` installs Git hooks that run the commit checks on every commit in a clone. The [README](../README.md) explains the porting rules and lists every skill's scope.
