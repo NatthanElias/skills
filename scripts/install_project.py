@@ -50,18 +50,22 @@ def main():
     parser.add_argument('--harness', required=True, choices=sorted(TARGETS))
     parser.add_argument('--root', required=True, type=Path, help='Repository root to install into')
     parser.add_argument('--dry-run', action='store_true', help='Preview without writing files')
+    parser.add_argument('--upgrade', action='store_true',
+                        help='Replace existing project skills and agents whose contents differ (reapply local overrides afterwards)')
     args = parser.parse_args()
     source = Path(__file__).resolve().parents[1] / args.harness / 'project'
     root = args.root.expanduser().resolve()
     if not root.is_dir():
         parser.error(f'Repository root does not exist: {root}')
     skills_dir, agents_dir = (root / part for part in TARGETS[args.harness])
-    pending, skipped, conflicts = [], [], []
+    pending, replacements, skipped, conflicts = [], [], [], []
     for skill in sorted(path.parent for path in (source / 'skills').glob('*/SKILL.md')):
         destination = skills_dir / skill.name
         if destination.exists() or destination.is_symlink():
-            if destination.is_dir() and file_contents(skill) == file_contents(destination):
+            if not destination.is_symlink() and destination.is_dir() and file_contents(skill) == file_contents(destination):
                 skipped.append(destination)
+            elif args.upgrade and not destination.is_symlink() and destination.is_dir():
+                replacements.append((skill, destination))
             else:
                 conflicts.append(destination)
         else:
@@ -69,8 +73,10 @@ def main():
     for agent in sorted(path for path in (source / 'agents').iterdir() if path.is_file()):
         destination = agents_dir / agent.name
         if destination.exists() or destination.is_symlink():
-            if destination.is_file() and destination.read_bytes() == agent.read_bytes():
+            if not destination.is_symlink() and destination.is_file() and destination.read_bytes() == agent.read_bytes():
                 skipped.append(destination)
+            elif args.upgrade and not destination.is_symlink() and destination.is_file():
+                replacements.append((agent, destination))
             else:
                 conflicts.append(destination)
         else:
@@ -86,7 +92,7 @@ def main():
         if hook_change is None and not conflicts:
             skipped.append(hook_target)
     if conflicts:
-        parser.exit(1, 'Back up conflicting destinations before installing:\n'
+        parser.exit(1, 'Back up conflicting destinations (or pass --upgrade to replace project skills and agents):\n'
                     + ''.join(f'  {path}\n' for path in conflicts))
     for destination in skipped:
         print(f'Unchanged: {destination}')
@@ -98,6 +104,14 @@ def main():
             else:
                 shutil.copy2(item, destination)
         print(f'{"Would install" if args.dry_run else "Installed"}: {destination}')
+    for item, destination in replacements:
+        if not args.dry_run:
+            if item.is_dir():
+                shutil.rmtree(destination)
+                shutil.copytree(item, destination, ignore=IGNORE)
+            else:
+                shutil.copy2(item, destination)
+        print(f'{"Would replace" if args.dry_run else "Replaced"}: {destination}')
     if hook_change is not None:
         if not args.dry_run:
             hook_target.parent.mkdir(parents=True, exist_ok=True)

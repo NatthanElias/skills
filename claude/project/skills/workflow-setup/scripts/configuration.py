@@ -2,6 +2,7 @@
 
 import re
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 import harness
 
@@ -9,7 +10,9 @@ ORDER = ("workflow-setup", "generate-roadmap", "feature-workflow")
 USER_ONLY = ("workflow-setup",)
 # Context: these dependencies are global skills of the same harness, installed outside the repository.
 GLOBAL_REQUIRES = {"workflow-setup": ("grill-me",), "feature-workflow": ("orchestrate",)}
-LINK = re.compile(r"\[[^]]+\]\(([^)#]+)(?:#[^)]*)?\)")
+INLINE_LINK = re.compile(r'\[[^\]\n]+\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+["\'][^\n]*?["\'])?\s*\)')
+REFERENCE_LINK = re.compile(r'^\s{0,3}\[[^\]\n]+\]:\s*(<[^>]+>|\S+)', re.MULTILINE)
+FENCE_RE = re.compile(r'^ {0,3}(`{3,}|~{3,})(.*)$')
 NAME = re.compile(r"[a-z0-9][a-z0-9-]*")
 
 
@@ -51,9 +54,38 @@ def missing_dependencies(root, skills):
             for skill in skills for dependency in GLOBAL_REQUIRES.get(skill, ()) if dependency not in found]
 
 
+def prose(text):
+    lines, fence = [], None
+    for line in text.splitlines():
+        match = FENCE_RE.match(line)
+        if match:
+            marker, tail = match.groups()
+            if fence is None:
+                if marker[0] != '`' or '`' not in tail:
+                    fence = marker
+                    continue
+            elif marker[0] == fence[0] and len(marker) >= len(fence) and not tail.strip():
+                fence = None
+                continue
+        if fence is None:
+            lines.append(re.sub(r'(`+).*?\1', '', line))
+    return '\n'.join(lines)
+
+
+def local_links(text):
+    clean_text = prose(text)
+    for pattern in (INLINE_LINK, REFERENCE_LINK):
+        for match in pattern.finditer(clean_text):
+            target = match.group(1).strip('<>')
+            parts = urlsplit(target)
+            if parts.scheme or parts.netloc or not parts.path:
+                continue
+            yield target, unquote(parts.path)
+
+
 def check_links(path):
-    for target in LINK.findall(path.read_text(encoding="utf-8")):
-        if "://" not in target and not (path.parent / target).resolve().is_file():
+    for target, dest in local_links(path.read_text(encoding="utf-8")):
+        if not (path.parent / dest).resolve().is_file():
             raise ValueError(f"Broken link in {path}: {target}")
 
 
@@ -83,8 +115,8 @@ def validate(root, skills, entry):
             if "templates" not in path.relative_to(folder).parts:
                 check_links(path)
             check_scripts(path.read_text(encoding="utf-8"), root)
-    for target in LINK.findall(entry):
-        if "://" not in target and not (root / target).resolve().is_file():
+    for target, dest in local_links(entry):
+        if not (root / dest).resolve().is_file():
             raise ValueError(f"Broken link in the always-on file: {target}")
     check_scripts(entry, root)
     return len(skills)

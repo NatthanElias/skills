@@ -54,9 +54,13 @@ Currency conversion.
 
 The agent proposes a record and the developer approves it, at plan Landing when a choice reaches past the feature, or at a build stop-and-ask. The roadmap skill writes `team D-NN` records in the session that agrees them. Create the file with `new`, fill every `[FILL]` or delete an optional section that has nothing to say, and commit the record in the feature commit.
 
+## Roadmap changes
+
+When `docs/roadmap/DECISIONS.md` exists, a plan decision that changes something the roadmap records is a blocker: the goal or demo story, the deadline or a milestone date, the team or a front's owner, the scope or cut line, or a contract between fronts. Name the item and the fronts it affects, and ask the user to agree it with them. Once agreed, append its line to `DECISIONS.md` by the decision log rules in `.opencode/skills/generate-roadmap/references/templates.md`. When the change binds code, also add or supersede its `team D-NN` record with `constraints.py new`. `DECISIONS.md` is for people, never a coding constraint.
+
 ## Read
 
-Before writing a plan or checks, run `list` with the areas and paths the change touches. Read every record it prints, global ones included. Conform to each, or propose a superseding record and say why. Ignoring a record silently is never an option.
+Before writing a plan or editing code, run `list` with the areas and paths the change touches. Read every record it prints, global ones included. Conform to each, or propose a superseding record and say why. Ignoring a record silently is never an option.
 
 ## Supersede or drop
 

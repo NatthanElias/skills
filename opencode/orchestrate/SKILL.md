@@ -107,15 +107,15 @@ When a gap requires choosing behavior, changing an interface, adding a dependenc
 
 ### Verifier
 
-Review completed work independently of its authors, in a fresh session with no inherited conversation. Give it the reviewed plan, checks when present, source documents, the review scope or diff range, and the applicable verification instructions. It returns the verdict with located evidence and explicit gaps, and repairs no implementation files.
+Review completed work independently of its authors, in a fresh session with no inherited conversation. Give it the verbatim `request.md`, `plan.md` (when present), binding captures, repo diff range(s), recorded `**Gates:**`, applicable `.specs/constraints/`, and the verification instructions—with no author summary or hints. It returns the verdict with located evidence and explicit gaps, and leaves no permanent edits in source, tests, or docs.
 
 #### When to review independently
 
-Skip independent review for typos, comments, formatting, documentation, and Markdown edits to skills, agents, or instructions; run focused checks instead. For a change to code, configuration, a dependency, a build, or a test, run the delegation gate on the review packet: plan, checks, sources, and changed files. Route the review by its decision:
+Skip independent review for typos, comments, formatting, documentation, and Markdown edits to skills, agents, or instructions; run focused checks instead. For a change to code, configuration, a dependency, a build, or a test, run the delegation gate on the review packet (`request.md`, `plan.md` when present, binding captures, and diff / changed files). Route the review by its decision:
 
-- Work locally: the root reviews the work itself, unless the user or the workflow requires independent review. That case uses `--exception independent-verification`.
+- Work locally: the root reviews the work itself, unless the user or the workflow requires independent review (such as `feature-workflow`). That case uses `--exception independent-verification`.
 - Delegate: one Verifier.
-- Split: one Verifier per slice within the ceiling.
+- Split: one Verifier per slice within the ceiling (or for workflows that require one end-to-end reviewer, such as `feature-workflow`, split the feature at planning time so each accepted feature stays within the ceiling).
 
 A Verifier is never the session or worker that built the work. It runs on a different model from the Builder, at the same tier or higher, and from another model family when one is configured. Built-in agents all run on the parent's model, so a cross-model Verifier needs a custom agent with its own `model`. Without one, ask the user with the `question` tool. The author's own review counts as feedback. Without a qualifying Verifier, record independent review as pending and do not report the work as verified.
 
@@ -131,10 +131,10 @@ Give each worker:
 
 Add the role-specific fields:
 
-- A Builder gets the approved plan and checks, its whole feature or named slices, baseline commands and their counts, the current HEAD and diff fingerprint, confirmed lessons, file ownership, and authorization limits.
-- A Verifier gets every check in its scope, the full plan and sources, the author's identity and model, the current HEAD, the diff, the file list the gate measured, named proof commands, baseline counts, and earlier surviving faults. A final Verifier covers the whole work, even when several Builders shared it; a review of the last slice alone cannot complete the work.
+- A Builder gets the approved `plan.md` (or small-change `request.md`), its whole feature or named vertical slices, applicable `.specs/constraints/` records, baseline commands and their counts, the current HEAD, file ownership, and authorization limits.
+- A Verifier gets `request.md` (verbatim), `plan.md` (when present), binding captures, the author's identity and model, repo diff range(s) (`<base>..<head>`), recorded `**Gates:**`, applicable `.specs/constraints/` records, and the team standards doc—with no author summary or hints. A targeted re-check gets the prior round's open blocking findings + the fix diff range instead (allowing up to 3 total review rounds—Round 1 full review, Round 2 re-check, Round 3 re-check—before escalating to the user). A final Verifier covers the whole work, even when several Builders shared it; a review of the last slice alone cannot complete the work.
 
-Dispatch a writer only after its checks and proof commands are settled and its prerequisites pass. A missing brief field is a planning gap: close it before dispatch.
+Dispatch a writer only after its spec and acceptance criteria are approved and its prerequisites pass. A missing brief field is a planning gap: close it before dispatch.
 
 Assign each file to one active writer at a time, including yourself. Other agents may read it. A worker that needs a file outside its ownership asks you to arrange a handoff. Transfer ownership only after the previous writer has stopped.
 

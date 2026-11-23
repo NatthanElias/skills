@@ -58,13 +58,13 @@ VS Code refuses a model above the main chat's cost tier, and the subagent does n
 
 Skip review for typos, comments, documentation, formatting, and Markdown edits to skills, agents, or instructions. Run focused checks instead.
 
-For a change to code, configuration, a dependency, a build, or a test, run the size script on the review packet: plan, checks, binding sources, and changed files. Route the review by the script's output:
+For a change to code, configuration, a dependency, a build, or a test, run the size script on the review packet (`request.md`, `plan.md` when present, binding captures, and changed files / diff). Route the review by the script's output:
 
-- `main session`: never dispatch a reviewer. The main session reviews the work itself.
+- `main session`: the main session reviews the work itself, unless the user or the workflow requires independent verification (such as `feature-workflow`), in which case dispatch one fresh independent reviewer anyway.
 - `one subagent`: one independent reviewer.
-- `split`: split the review into pieces within the ceiling, one independent reviewer each.
+- `split`: split into pieces within the ceiling, one independent reviewer each (or for workflows that require one end-to-end reviewer, such as `feature-workflow`, split the feature at planning time so each accepted feature stays within the ceiling).
 
-An independent reviewer is a fresh subagent, never the session or dispatch that built it. The reviewer's model comes from another vendor family than the builder's, at the same tier or higher. If the matching custom reviewer runs on the builder's family, ask the user with the question tool. The author's own review counts as feedback. From the floor up, without a qualifying reviewer, record independent review as pending and leave the feature unverified.
+An independent reviewer is a fresh subagent, never the session or dispatch that built it. The reviewer's model comes from another vendor family than the builder's, at the same tier or higher. If the matching custom reviewer runs on the builder's family, ask the user with the question tool. The author's own review counts as feedback. Without a qualifying reviewer when independent review is required, record independent review as pending and leave the feature unverified.
 
 ## Split and run in parallel
 
@@ -79,10 +79,10 @@ Atomize the work into the smallest pieces that each have one question or bounded
 Unless the always-on instructions record `Repositories: single`, resolve selected repositories and their IDs through workspace-analysis. With `Repositories: single`, the packet names the repository root instead of repository IDs and bindings.
 
 - Explore gets one question, selected roots, exclusions, a stop rule, and the answer format below.
-- A builder gets the approved plan and checks, its whole feature or named outcome slices, repository IDs and local bindings, baseline commands and counts, current HEAD and diff fingerprints, confirmed lessons, the team standards skill or document named in Team additions, file ownership, and authorization limits.
-- A verifier gets every check in its scope, the full plan and binding sources, the author's identity and model, selected repository IDs and local bindings, current HEAD and fingerprints, the diff, the review file list the size script measured, named proof commands, baseline counts, mutation budget, earlier surviving faults, and the team standards skill or document named in Team additions. A final verifier gets the whole feature, even when several builders worked on it. A review of only the final slice cannot complete the feature.
+- A builder gets the approved `plan.md` (or small-change `request.md`), its whole feature or named vertical slices, applicable `.specs/constraints/` records, repository IDs and local bindings, baseline commands and counts, current HEAD, the team standards skill or document named in Team additions, file ownership, and authorization limits.
+- A reviewer gets `request.md` (verbatim), `plan.md` (when present), binding captures, the author's identity and model, selected repository IDs and local bindings, repo diff range(s) (`<base>..<head>`), recorded `**Gates:**`, applicable `.specs/constraints/` records, and the team standards skill or document named in Team additions—with no author summary or hints. A targeted re-check gets the prior round's open blocking findings + the fix diff range instead (allowing up to 3 total review rounds—Round 1 full review, Round 2 re-check, Round 3 re-check—before escalating to the user). A final reviewer covers the whole feature, even when several builders worked on it.
 
-Dispatch a writer only after its checks and proof commands are settled and its prerequisites pass. Treat a missing packet field as a planning gap and close it before dispatch.
+Dispatch a writer only after its spec and acceptance criteria are approved and its prerequisites pass. Treat a missing packet field as a planning gap and close it before dispatch.
 
 ## Explore answer
 

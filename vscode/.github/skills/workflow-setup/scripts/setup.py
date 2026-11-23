@@ -186,7 +186,7 @@ def entry_text(settings, selected, skills, single, project, feature_root):
         "Read the [workspace overview](../docs/workspace/overview.md) first to pick a repository. "
         "Each selected repository has a page at `docs/workspace/repos/<repo>.md`.\n"
         "Read [integrations](../docs/workspace/integrations.md) before changing an HTTP path, topic, or shared library.")
-    team = [f"- Project ID for lessons and review rounds: {project}.",
+    team = [f"- Project ID: {project}.",
             f"- Commits: {one_line(settings.get('commits', COMMITS), 'commit policy').rstrip('.')}.",
             f"- Delegation: {one_line(settings.get('delegation', 'Helpers allowed; parallel writes not allowed'), 'delegation').rstrip('.')}. "
             + configuration.delegation_line(skills)]
@@ -261,6 +261,8 @@ def proposed(settings, github=None, additions=None, adding=()):
     if set(checks) - set(selected):
         raise ValueError("Checks reference unselected repositories")
     feature_root = portable(settings.get("feature_root", ".specs/features/<feature>/").rstrip("."))
+    if "feature-workflow" in skills and feature_root != ".specs/features/<feature>/":
+        raise ValueError("feature-workflow uses the fixed artifact path `.specs/features/<feature>/`")
     project = settings.get("project", "project")
     if not isinstance(project, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", project):
         raise ValueError(f"Use a lowercase project ID: {project!r}")

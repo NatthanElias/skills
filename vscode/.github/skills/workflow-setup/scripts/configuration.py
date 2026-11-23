@@ -3,6 +3,7 @@
 import hashlib
 import re
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 
 DAILY = (
@@ -23,7 +24,9 @@ MULTI_ONLY = "workspace-analysis"
 # The workspace validator owns these generated pages.
 WORKSPACE_LINKS = ("../docs/workspace/overview.md", "../docs/workspace/integrations.md")
 CODE_CHANGES = "code, configuration, dependency, build, or test changes"
-LINK = re.compile(r"\[[^]]+\]\(([^)#]+)(?:#[^)]*)?\)")
+INLINE_LINK = re.compile(r'\[[^\]\n]+\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+["\'][^\n]*?["\'])?\s*\)')
+REFERENCE_LINK = re.compile(r'^\s{0,3}\[[^\]\n]+\]:\s*(<[^>]+>|\S+)', re.MULTILINE)
+FENCE_RE = re.compile(r'^ {0,3}(`{3,}|~{3,})(.*)$')
 SCRIPT = re.compile(r"\b(python3?)\s+(\.github/skills/[\w-]+/scripts/[\w.-]+\.py)(?=\s|`|$)")
 NAME = re.compile(r"[a-z0-9][a-z0-9-]*")
 
@@ -102,9 +105,38 @@ def delegation_line(skills):
             f"{CODE_CHANGES}.")
 
 
+def prose(text):
+    lines, fence = [], None
+    for line in text.splitlines():
+        match = FENCE_RE.match(line)
+        if match:
+            marker, tail = match.groups()
+            if fence is None:
+                if marker[0] != '`' or '`' not in tail:
+                    fence = marker
+                    continue
+            elif marker[0] == fence[0] and len(marker) >= len(fence) and not tail.strip():
+                fence = None
+                continue
+        if fence is None:
+            lines.append(re.sub(r'(`+).*?\1', '', line))
+    return '\n'.join(lines)
+
+
+def local_links(text):
+    clean_text = prose(text)
+    for pattern in (INLINE_LINK, REFERENCE_LINK):
+        for match in pattern.finditer(clean_text):
+            target = match.group(1).strip('<>')
+            parts = urlsplit(target)
+            if parts.scheme or parts.netloc or not parts.path:
+                continue
+            yield target, unquote(parts.path)
+
+
 def check_links(path, base):
-    for target in LINK.findall(path.read_text(encoding="utf-8")):
-        if "://" not in target and not (base / target).resolve().is_file():
+    for target, dest in local_links(path.read_text(encoding="utf-8")):
+        if not (base / dest).resolve().is_file():
             raise ValueError(f"Broken selected route link in {path}: {target}")
 
 
@@ -141,9 +173,9 @@ def validate(root, skills, entry, entry_fallback=None):
             base = github if path.name == "copilot-instructions.template.md" else path.parent
             check_links(path, base)
             check_scripts(path.read_text(encoding="utf-8"), root)
-    for target in LINK.findall(entry):
-        if ("://" not in target and target not in WORKSPACE_LINKS and not (github / target).resolve().is_file()
-                and not (entry_fallback and (entry_fallback / target).resolve().is_file())):
+    for target, dest in local_links(entry):
+        if (dest not in WORKSPACE_LINKS and not (github / dest).resolve().is_file()
+                and not (entry_fallback and (entry_fallback / dest).resolve().is_file())):
             raise ValueError(f"Broken selected entry link: {target}")
     check_scripts(entry, root, entry_fallback)
     return len(skills)

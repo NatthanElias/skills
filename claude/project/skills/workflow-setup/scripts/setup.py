@@ -98,7 +98,7 @@ def entry_text(settings, repository, skills, project, feature_root):
     checks = settings.get("checks", {})
     parts["checks"] = (f"- {repository}: `{one_line(checks[repository], 'check command', ('`',))}`"
                        if repository in checks else f"- {repository}: No command established; validation gap")
-    team = [f"- Project ID for lessons and review rounds: {project}.",
+    team = [f"- Project ID: {project}.",
             f"- Commits: {one_line(settings.get('commits', COMMITS), 'commit policy').rstrip('.')}.",
             f"- Delegation: {one_line(settings.get('delegation', 'Helpers allowed; parallel writes not allowed'), 'delegation').rstrip('.')}. "
             f"Load the `orchestrate` skill before dispatch, research, or a review of {CODE_CHANGES}."]
@@ -170,6 +170,8 @@ def proposed(settings, root):
     if set(settings.get("checks", {})) - {repository}:
         raise ValueError("Checks reference an unselected repository")
     feature_root = portable(settings.get("feature_root", ".specs/features/<feature>/").rstrip("."))
+    if "feature-workflow" in skills and feature_root != ".specs/features/<feature>/":
+        raise ValueError("feature-workflow uses the fixed artifact path `.specs/features/<feature>/`")
     project = settings.get("project", "project")
     if not isinstance(project, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", project):
         raise ValueError(f"Use a lowercase project ID: {project!r}")
