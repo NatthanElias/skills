@@ -4,9 +4,9 @@ One unified sequence for every code change (no modes or tiers): **Round 1 fresh 
 
 ## 1. Dispatch the fresh reviewer
 
-Record `**Review:** sent at <HEAD short hash>` in the leading metadata block of `plan.md` (or `request.md` for small changes). Run [orchestrate-vscode](../../orchestrate-vscode/SKILL.md)'s size script and dispatch one fresh independent reviewer (even below the size floor):
+Record `**Review:** sent at <HEAD short hash>` in the leading metadata block of `plan.md` (or `request.md` for small changes). Dispatch one fresh independent reviewer via [orchestrate-vscode](../../orchestrate-vscode/SKILL.md) (use its advisory size helper when the review packet looks large):
 - Dispatch **one fresh sub-agent** per accepted feature, never the author, from another model family when the client can dispatch one; if the only available reviewer shares the Builder's model, ask the user before proceeding.
-- If the gate returns `split`, do not split `review.md` across colliding writers—return to [plan](plan.md) for an agreed sub-feature split preserving cross-slice criteria so each accepted feature keeps one end-to-end reviewer and one report owner.
+- If the review packet exceeds the ~150k ceiling, do not split `review.md` across colliding writers—return to [plan](plan.md) for an agreed sub-feature split preserving cross-slice criteria so each accepted feature keeps one end-to-end reviewer and one report owner.
 - Preload only `request.md` (verbatim) + `plan.md` (when present) + the diff range(s) + `captures/`. Put the complete packet instructions in the reviewer brief; add no author summary or hints about where to look.
 - **Diff ranges:** pass every touched repository and its `<base>..<head>` range. In a greenfield first feature with no prior base commit, pass Git's empty-tree SHA `4b825dc642cb6eb9a060e54bf8d69288fbee4904..<head>`.
 

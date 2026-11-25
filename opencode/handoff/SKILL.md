@@ -1,13 +1,13 @@
 ---
 name: handoff
-description: Compact the current conversation into a handoff so the next task starts in a fresh chat with clean context. Use between tasks, when the user wants to clear context or move to a new chat, branch or checkout.
+description: Write a handoff document so the next task starts in a fresh chat with clean context. Use at a meaningful work boundary (such as approved planning to implementation), when switching chats, branches, or checkouts, or when the user asks; prefer in-thread compaction for mid-task context pressure.
 ---
 
 # Handoff
 
 Write a handoff document summarising the current conversation so a fresh agent can continue the work.
 
-If this conversation still has an unfinished task, warn the user in one line and write the handoff anyway. Record the unfinished work, its last known state, and the next step.
+Prefer in-thread compaction when a task is still underway rather than treating a token count such as 150K as an automatic handoff threshold; a fresh thread fits a clean work boundary (such as moving from approved planning to implementation). If the user explicitly asks for a handoff while a task is unfinished, mention compaction as an option in one line and write the handoff anyway—never block an explicit request. Record the unfinished work, its last known state, and the next step.
 
 Save the handoff to the OS temporary directory unless the user names another place. Tell the user the path and ask them to open a new chat from it. A new chat starts with only the handoff. Continuing in this chat keeps the whole history.
 

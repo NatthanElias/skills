@@ -6,7 +6,7 @@ Deliver the approved plan slice by slice at production quality. Criteria and app
 
 1. Reconcile against [Resume](../SKILL.md#resume) if work already exists.
 2. Run `constraints.py list` for touched areas and paths. Read the changed code paths, their callers, and every consumer/fixture listed in `plan.md` `Changes underneath`.
-3. Run [orchestrate-vscode](../../orchestrate-vscode/SKILL.md)'s size script on the slice files and follow its route (build locally, dispatch a Builder so the main session stays clean for review dispatch, or split by whole vertical slices on green commits; if one slice alone exceeds the ceiling, refine the slice first). Put the complete packet instructions in every Builder brief.
+3. Decide whether to build locally or dispatch a Builder via [orchestrate-vscode](../../orchestrate-vscode/SKILL.md) (use its advisory size helper when a slice looks large, keeping each slice within ~150k estimated tokens on green commits; if one slice alone exceeds the ceiling, refine the slice first). Put the complete packet instructions in every Builder brief.
 
 ## Slice by slice
 

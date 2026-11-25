@@ -26,23 +26,54 @@ HOOK_FILES = {
 IGNORE = shutil.ignore_patterns('__pycache__', '*.pyc', '*.pyo', '.pytest_cache')
 
 
-def merged_hooks(source, target):
-    """Return the target hook file text with the collection's missing hook groups added, or None."""
+MANAGED_HOOK_MARKERS = ('feature-workflow/scripts/resume_note.py',)
+
+
+def managed_hook_key(group):
+    """Return (matcher, marker) if group runs a skill-managed hook script, else None."""
+    if not isinstance(group, dict):
+        return None
+    hooks = group.get('hooks')
+    if not isinstance(hooks, list):
+        return None
+    for item in hooks:
+        command = item.get('command') if isinstance(item, dict) else None
+        if isinstance(command, str):
+            for marker in MANAGED_HOOK_MARKERS:
+                if marker in command:
+                    return (group.get('matcher'), marker)
+    return None
+
+
+def merged_hooks(source, target, upgrade=False):
+    """Return the target hook file text with the collection's hook groups added/updated, or None."""
     wanted = json.loads(source.read_text(encoding='utf-8'))['hooks']
     current = json.loads(target.read_text(encoding='utf-8')) if target.exists() else {}
     if not isinstance(current, dict) or not isinstance(current.get('hooks', {}), dict):
         raise ValueError(f'{target} does not hold a JSON object with a "hooks" object')
     hooks = current.setdefault('hooks', {})
-    added = False
+    changed = False
     for event, groups in wanted.items():
         present = hooks.setdefault(event, [])
         if not isinstance(present, list):
             raise ValueError(f'{target} holds a non-list "{event}" hook entry')
         for group in groups:
-            if group not in present:
+            key = managed_hook_key(group)
+            matches = [i for i, existing in enumerate(present)
+                       if key is not None and managed_hook_key(existing) == key]
+            if matches:
+                if len(matches) == 1 and present[matches[0]] == group:
+                    continue
+                if not upgrade:
+                    raise ValueError(f'existing {event} hook for {key[1]} differs; pass --upgrade to replace')
+                present[matches[0]] = group
+                for index in reversed(matches[1:]):
+                    present.pop(index)
+                changed = True
+            elif group not in present:
                 present.append(group)
-                added = True
-    return json.dumps(current, indent=2) + '\n' if added else None
+                changed = True
+    return json.dumps(current, indent=2) + '\n' if changed else None
 
 
 def main():
@@ -86,7 +117,7 @@ def main():
     if args.harness in HOOK_FILES and hook_source.exists():
         hook_target = root / HOOK_FILES[args.harness]
         try:
-            hook_change = merged_hooks(hook_source, hook_target)
+            hook_change = merged_hooks(hook_source, hook_target, upgrade=args.upgrade)
         except (ValueError, json.JSONDecodeError) as error:
             conflicts.append(f'{hook_target} ({error})')
         if hook_change is None and not conflicts:

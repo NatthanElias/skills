@@ -15,6 +15,7 @@ Usage:
 """
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -170,9 +171,43 @@ def note(root):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="resume_note.py", description=__doc__.strip().splitlines()[0])
-    parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument("--root", type=Path, default=None)
+    parser.add_argument("--format", choices=("text", "vscode-hook"), default="text")
     args = parser.parse_args(argv)
-    text = note(args.root)
+    root = args.root
+    if args.format == "vscode-hook":
+        payload = {}
+        if not sys.stdin.isatty():
+            try:
+                raw = sys.stdin.read().strip()
+                if raw:
+                    data = json.loads(raw)
+                    if isinstance(data, dict):
+                        payload = data
+            except (json.JSONDecodeError, OSError):
+                pass
+        # Skip subagents and unrelated new/startup sessions; emit on resume (or when source is omitted).
+        source = payload.get("source")
+        if payload.get("agentId") or payload.get("agent_id") or (isinstance(source, str) and source != "resume"):
+            print("{}")
+            return 0
+        if root is None:
+            cwd = payload.get("cwd")
+            root = Path(cwd) if isinstance(cwd, str) and cwd else Path.cwd()
+        text = note(root)
+        if text:
+            # Top-level additionalContext is read by the Copilot harness; hookSpecificOutput supports the legacy Local harness.
+            print(json.dumps({
+                "additionalContext": text,
+                "hookSpecificOutput": {
+                    "hookEventName": "SessionStart",
+                    "additionalContext": text,
+                },
+            }))
+        else:
+            print("{}")
+        return 0
+    text = note(root or Path.cwd())
     if text:
         print(text)
     return 0

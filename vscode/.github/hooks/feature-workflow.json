@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "python3 .github/skills/feature-workflow/scripts/resume_note.py --format vscode-hook",
+        "powershell": "python .github\\skills\\feature-workflow\\scripts\\resume_note.py --format vscode-hook",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

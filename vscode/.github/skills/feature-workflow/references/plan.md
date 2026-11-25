@@ -8,7 +8,7 @@ The one artifact a human reads to approve or challenge the work before code is w
 2. **Read constraints and ground in code:** Run `python3 .github/skills/feature-workflow/scripts/constraints.py list` for expected areas and paths. Read accepted requirements/tickets, repository instructions, current code, callers, tests, and CI. Resolve findable facts in order: code/conventions → project docs → library docs → web (keep proprietary code, customer data, and internal URLs out of external tools).
 3. **Open every binding source in full** (every capture, frame, and state) before writing the first criterion. If a binding source is unreachable, ask for the exported files as a `blocks` question.
 4. **Check baseline:** Run baseline build, test, and lint commands individually (never masking a failure with `;`) once (except in a [greenfield first feature](#greenfield-first-feature)). A failing baseline stops work unless the user explicitly accepts the named failure.
-5. **Size the feature early:** Estimate the expected review packet via [orchestrate-vscode](../../orchestrate-vscode/SKILL.md)'s size script. If the planned change would exceed the review ceiling (or grows too broad to review in one end-to-end pass), propose a split into accepted sub-features that preserve cross-slice acceptance criteria so each accepted feature keeps one fresh reviewer and one `review.md`.
+5. **Size the feature early:** Keep the feature small enough for one end-to-end review; use [orchestrate-vscode](../../orchestrate-vscode/SKILL.md)'s advisory size helper when a change looks large (~150k estimated tokens). If it would grow too broad to review in one pass, propose a split into accepted sub-features that preserve cross-slice acceptance criteria so each accepted feature keeps one fresh reviewer and one `review.md`.
 6. **Settle open architectural bets first:** If the architecture is genuinely undecided, settle it in an ADR, RFC, or spike and link it. `plan.md` records the shape that won.
 
 ## What must be true
@@ -189,4 +189,10 @@ New: <entities/relations or `nothing - read only`>. One-way constraints: <constr
 
 1. Re-read `request.md` sentence by sentence: every sentence must land on a criterion, an `Out of scope` row, or an open question.
 2. Run `python3 .github/skills/feature-workflow/scripts/validate_plan.py <feature>` and fix every error.
-3. Present `Shape`, `Consumers`, `Landing` doors (with `Reverse by`), assumptions, and any blockers—then **stop**. Answers to questions update the plan and are **not** approval; re-present the updated plan. Write `**Approved**: <YYYY-MM-DD> - user: "<their words>"` only after explicit user approval, then continue to [build](build.md).
+3. Present `Shape`, `Consumers`, `Landing` doors (with `Reverse by`), assumptions, and any blockers—then **stop**. Answers to questions update the plan and are **not** approval; re-present the updated plan. After explicit user approval, write `**Approved**: <YYYY-MM-DD> - user: "<their words>"` in `plan.md`. Unless the user explicitly asked to continue in the current thread (e.g., "approved, build here"), **stop** and output a short copyable prompt in a plaintext code block for starting implementation in a fresh thread (do not create a handoff file or launch a thread automatically):
+
+   ```text
+   Implement the approved plan in .specs/features/<feature>/plan.md using feature-workflow.
+   ```
+
+   Otherwise continue to [build](build.md).

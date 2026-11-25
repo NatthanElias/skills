@@ -2,6 +2,12 @@
 
 The VS Code bundle in `vscode/.github/` is a workflow for teams that build features with coding agents. Teams select the skills they need, and `feature-workflow` is optional. This page explains why the bundle works the way it does and what it asks of you. For what each skill does, see the [README](../README.md#skill-scopes).
 
+## Philosophy
+
+Tell the agent what must be true and name the hard boundaries, then let it decide how to build it. Modern coding agents handle routine implementation and research mechanics well; prescribing every intermediate step adds friction without improving outcomes.
+
+This package starts from the radical simplicity of `tlc-spec-lean`: cut repetitive checks and paperwork that do not earn their cost. Keep high-leverage safeguards for security, governance, consumer and contract impact, and independent verification, especially for enterprise brownfield systems and multi-repository services where a small diff can break distant callers. Every guardrail in this repository must justify its cost against a real failure mode.
+
 ## At a glance
 
 Coding agents fail in predictable ways. The bundle bounds each task, makes the agent's work checkable, and keeps consequential choices with you:
@@ -9,7 +15,7 @@ Coding agents fail in predictable ways. The bundle bounds each task, makes the a
 | Agent failure | The bundle's answer |
 | --- | --- |
 | Decides what is yours to decide | Product choices, scope, and tradeoffs go to you through the question tool, with a recommended option; answers update the spec and are not approval |
-| Loses detail in a long context | A script sizes each dispatch and review, and subagents get a complete packet (`request.md`, `plan.md`, and diff) instead of the chat history |
+| Loses detail in a long context | An advisory sizing helper flags scopes over 150k estimated tokens for splitting, and subagents get a complete packet (`request.md`, `plan.md`, and diff) instead of the chat history |
 | Calls work done too early | Every slice commits green, required gates record exit codes and counts on a clean tree, and UI changes are exercised in a browser |
 | Invents commands, APIs, and facts | Agents never fabricate APIs, flags, or commands; assumptions never support PASS |
 | Grades its own work generously | Every code change gets a fresh reviewer on another vendor's model with no author summary or hints, checking the verbatim request and diff |
@@ -35,20 +41,21 @@ flowchart LR
 Three ideas shape this flow:
 
 - **Small changes.** At most three files change, with no one-way door (no contract, schema, persisted field, dependency, migration, or cross-repository consumer change) and zero outside callers observing different behavior. A small change skips `plan.md`, records approval and EARS criteria in `request.md`, and still gets a fresh independent reviewer.
-- **Plans.** A plan freezes what must be true before freeing how it is built: problem, numbered [EARS](https://alistairmavin.com/ears/) criteria, binding captures, vertical slices (S1 tracer bullet first), and consumer/compatibility impact. `validate_plan.py` checks structure before presentation.
+- **Plans.** A plan freezes what must be true before freeing how it is built: problem, numbered [EARS](https://alistairmavin.com/ears/) criteria, binding captures, vertical slices (S1 tracer bullet first), and consumer/compatibility impact. `validate_plan.py` checks structure before presentation. After explicit approval, the agent records the approval and outputs a short copyable prompt so you can start implementation in a fresh thread or tell it to continue in place.
 - **Hard-to-reverse choices.** The plan's `Landing` section lists each one with the alternative it rejected. After approval, a changed decision records a `**Settled mid-build:**` entry (with user approval for product/contract shifts).
 
 ## Who does the work
 
-`estimate_size.py` (or `delegation_gate.py` in the other harnesses) divides file bytes by four to estimate tokens. The build is sized on each slice's files, and the review on `request.md`, `plan.md` (when present), binding captures, and the diff / changed files:
+The main session decides when to work locally and when to delegate—including dispatching multiple small read-only Scouts in parallel for research or codebase discovery. `estimate_size.py` (or `delegation_gate.py` in the other harnesses) is an **advisory** sizing helper that divides file bytes by four to estimate tokens, mainly to catch oversized scopes before one agent is handed too much context:
 
-| Estimated tokens | Build | Review |
+| Estimated scope | Build | Review |
 | --- | --- | --- |
-| Under 25k | Main session | One fresh reviewer on another vendor's model for every code change (pure non-logic edits skip review) |
-| 25k to 150k | One subagent | One fresh reviewer on another vendor's model |
-| Over 150k | Pieces of 150k or less, committed slice by slice | Split oversized features during planning so each accepted feature fits one end-to-end reviewer and one `review.md` |
+| Fits comfortably in one pass (up to ~150k) | Main session or one subagent, by judgment | One fresh reviewer on another vendor's model for every code change (pure non-logic edits skip review) |
+| Over ~150k | Pieces of 150k or less, committed slice by slice | Split oversized features during planning so each accepted feature fits one end-to-end reviewer and one `review.md` |
 
-A fixed threshold gives the same route on every run, where an agent's judgment drifts. The ceiling bounds what one agent is handed, because models use the middle of a long context less reliably ([Liu et al., 2023](https://arxiv.org/abs/2307.03172)). Both numbers are our settings, not measured limits. Markdown edits to docs, skills, and instructions get focused checks instead of an independent review.
+The 150k ceiling is a heuristic setting, not a measured limit, aimed at avoiding mid-context degradation ([Liu et al., 2023](https://arxiv.org/abs/2307.03172)). Removing a mandatory lower-bound floor avoids paperwork on small parallel Scouts and leaves routine dispatch judgment to the orchestrator. Markdown edits to docs, skills, and instructions get focused checks instead of an independent review.
+
+For long-running threads, prefer **in-thread compaction** when a task is still underway rather than treating 150k tokens as an automatic handoff threshold, and use a fresh-thread handoff at meaningful work boundaries (such as approved planning to implementation) or whenever you explicitly ask for one. Relying on improved model handling of compaction is a design premise, not a verified benchmark.
 
 The main session keeps scope, questions, `review.md`, and the final report. A subagent cannot ask you anything, so a builder that hits a missing decision or broken assumption stops and returns the question.
 

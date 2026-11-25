@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/skills/feature-workflow/scripts/resume_note.py\" --root \"$CLAUDE_PROJECT_DIR\"",
+            "command": "if [ -f \"$CLAUDE_PROJECT_DIR/.claude/skills/feature-workflow/scripts/resume_note.py\" ]; then python3 \"$CLAUDE_PROJECT_DIR/.claude/skills/feature-workflow/scripts/resume_note.py\" --root \"$CLAUDE_PROJECT_DIR\"; fi",
             "timeout": 10
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/skills/feature-workflow/scripts/resume_note.py\" --root \"$CLAUDE_PROJECT_DIR\"",
+            "command": "if [ -f \"$CLAUDE_PROJECT_DIR/.claude/skills/feature-workflow/scripts/resume_note.py\" ]; then python3 \"$CLAUDE_PROJECT_DIR/.claude/skills/feature-workflow/scripts/resume_note.py\" --root \"$CLAUDE_PROJECT_DIR\"; fi",
             "timeout": 10
           }
         ]

@@ -7,106 +7,74 @@ description: "Use before any subagent dispatch, alone or in parallel, AND for an
 
 The main session owns scope, user questions, repository bindings, review records, and the final report. Each subagent gets a bounded packet, reports, and stops. Product decisions stay with the user.
 
-A subagent starts without the chat history and cannot ask the user anything. Its report ends the dispatch. Follow-up work needs a new dispatch with a complete packet.
+A subagent starts without the chat history and cannot ask the user anything. Follow-up work needs a new dispatch with a complete packet.
 
-Work on the branch and revision the user has already checked out. Never switch branches, check out another revision, or create a branch. Include this restriction in every subagent packet. The user supplies the correct branch; repository and checkout IDs are identity labels, not Git instructions.
+Work on the branch and revision the user has already checked out. Never switch branches, check out another revision, or create a branch, and put this restriction in every subagent packet. Repository and checkout IDs are identity labels, not Git instructions.
 
-## Size the work
+## When to delegate and split
 
-Before every dispatch, including Explore, run the size script on the files and folders the work will read or touch:
+Use judgment to decide when work stays in the main session vs. goes to a subagent. Actively split independent read-only research or codebase discovery across multiple small parallel `Explore` subagents when questions separate cleanly.
 
-```
+When a slice or review packet looks large, use [scripts/estimate_size.py](scripts/estimate_size.py) as an **advisory** sizing helper (`bytes / 4`, skipping `.git`) to check whether it approaches the ~150k estimated-token ceiling:
+
+```text
 python3 .github/skills/orchestrate-vscode/scripts/estimate_size.py <path>...
 ```
 
-It sums the bytes, skipping `.git`, divides by four, and prints the route with the floor and ceiling it applied. The floor is the smallest estimate worth a subagent; the ceiling is the most one subagent takes. Never dispatch without its output. If you cannot name the paths, ask the user with the question tool. Web-only research has no local paths: send it to Explore, and run the script only on any local paths it also reads.
+Keep each subagent's scope within ~150k estimated tokens; split oversized work into independent pieces or whole vertical slices (a workflow that cuts its own slices, such as `feature-workflow`, still keeps each builder and reviewer within the ceiling).
 
-| Route printed | Dispatch |
-| --- | --- |
-| `main session`, or the work waits on a user decision | None. The main session does the work |
-| `one subagent` | One subagent |
-| `split into at least N pieces` | Pieces within the ceiling, one subagent each. A piece that cannot fit is too coarse; revise it |
+- Read-only subagents, including `Explore`, may always run in parallel.
+- Writers run in parallel only when the always-on instructions allow parallel writes and each file has one active writer; otherwise they run in sequence.
+- When unsure whether pieces may run in parallel, ask the user with the question tool: name the pieces, what they share or depend on, and the risk, and recommend parallel, sequence, or a different split.
 
-A workflow that cuts its own slices, such as feature-workflow, still keeps each builder within the ceiling.
-
-## Pick the agent
+## Pick the agent and model
 
 List the agents the subagent tool offers, then take the first that fits:
 
-1. A custom agent whose description names this work. Dispatch it by its exact name. If two fit, or the fit is doubtful, ask the user with the question tool.
-2. Explore, for a read-only question.
-3. A general subagent: dispatch without an agent name. It inherits the main session's tools, so the packet states its limits. For a build or a review, copy the limits from the task-worker or spec-verifier agent file.
+1. A custom agent whose description names this work. Dispatch it by its exact name without overriding its model. If two fit, or the fit is doubtful, ask the user with the question tool.
+2. `Explore`, for a read-only question.
+3. A general subagent (no agent name): it inherits the main session's tools, so the packet states its limits (for a build or review, copy the limits from the `task-worker` or `spec-verifier` agent file).
 
-## Pick the model
-
-A custom agent runs on the model in its own file. Dispatch it without a model.
-
-Pass a model when dispatching Explore or a general subagent:
+Pass a model when dispatching `Explore` or a general subagent:
 
 | Role | Models, in order |
 | --- | --- |
-| Research and exploration, including Explore | `GPT-6 Luna (copilot)` only |
+| Research and exploration, including `Explore` | `GPT-6 Luna (copilot)` only |
 | Substantial code changes | `Claude Opus 5.5 (copilot)`, then `Claude Sonnet 5.5 (copilot)` |
 | Review, verification, judging | `GPT-6.1 Sol (copilot)`, then `GPT-6 Sol (copilot)`. When a GPT model built the code, `Claude Opus 5.5 (copilot)` |
 | Any other work | `GPT-6.1 Sol (copilot)`, then `GPT-6 Sol (copilot)` |
 
-Opus 5.5 and both Sol models share the top tier. Sonnet 5.5 sits one tier below.
+Opus 5.5 and both Sol models share the top tier; Sonnet 5.5 sits one tier below.
 
-VS Code refuses a model above the main chat's cost tier, and the subagent does not start. On a refusal, dispatch again with the next model in the row. When the row runs out, ask the user. When Explore's model or a custom agent's model is refused, ask right away: switch the main chat's model, read in the main session, or wait. For a custom agent, also offer a general subagent on the table's model.
+VS Code refuses a model above the main chat's cost tier and the subagent does not start. On a refusal, retry with the next model in the row; when none remains, ask the user. When `Explore`'s model or a custom agent's model is refused, ask right away: switch the main chat's model, read in the main session, or wait (for a custom agent, also offer a general subagent on the table's model). Never substitute silently.
 
 ## Independent review
 
-Skip review for typos, comments, documentation, formatting, and Markdown edits to skills, agents, or instructions. Run focused checks instead.
+Skip independent review for typos, comments, documentation, formatting, and Markdown edits to skills, agents, or instructions; run focused checks instead.
 
-For a change to code, configuration, a dependency, a build, or a test, run the size script on the review packet (`request.md`, `plan.md` when present, binding captures, and changed files / diff). Route the review by the script's output:
+For changes to code, configuration, dependencies, builds, or tests, dispatch one fresh independent reviewer when the workflow (such as `feature-workflow`) or user requires it, or when the change warrants independent verification. For `feature-workflow`, follow its `references/review.md` and split oversized features at planning time rather than splitting `review.md` across colliding writers.
 
-- `main session`: the main session reviews the work itself, unless the user or the workflow requires independent verification (such as `feature-workflow`), in which case dispatch one fresh independent reviewer anyway.
-- `one subagent`: one independent reviewer.
-- `split`: split into pieces within the ceiling, one independent reviewer each (or for workflows that require one end-to-end reviewer, such as `feature-workflow`, split the feature at planning time so each accepted feature stays within the ceiling).
-
-An independent reviewer is a fresh subagent, never the session or dispatch that built it. The reviewer's model comes from another vendor family than the builder's, at the same tier or higher. If the matching custom reviewer runs on the builder's family, ask the user with the question tool. The author's own review counts as feedback. Without a qualifying reviewer when independent review is required, record independent review as pending and leave the feature unverified.
-
-## Split and run in parallel
-
-Atomize the work into the smallest pieces that each have one question or bounded slice, their own files, and no need for another piece's result. Dispatch independent pieces together, then merge their answers in the main session.
-
-- Read-only subagents, including Explore, may always run in parallel.
-- Writers run in parallel only when the always-on instructions allow parallel writes and each file has one writer. Otherwise they run in sequence.
-- When unsure whether pieces may run in parallel, ask the user with the question tool before dispatching. Name the pieces, what they share or depend on, and the risk. Offer to run them in parallel, in sequence, or split differently, and mark one option as recommended.
+An independent reviewer is a fresh subagent, never the session or dispatch that built the work. Its model comes from another vendor family than the builder's, at the same tier or higher. If the matching custom reviewer runs on the builder's family, ask the user with the question tool. The author's own review counts as feedback; without a qualifying reviewer when independent review is required, record independent review as pending and leave the feature unverified.
 
 ## Prepare the packet
 
-Unless the always-on instructions record `Repositories: single`, resolve selected repositories and their IDs through workspace-analysis. With `Repositories: single`, the packet names the repository root instead of repository IDs and bindings.
+Unless the always-on instructions record `Repositories: single`, resolve selected repositories and their IDs through `workspace-analysis`. With `Repositories: single`, name the repository root instead of repository IDs and bindings.
 
-- Explore gets one question, selected roots, exclusions, a stop rule, and the answer format below.
-- A builder gets the approved `plan.md` (or small-change `request.md`), its whole feature or named vertical slices, applicable `.specs/constraints/` records, repository IDs and local bindings, baseline commands and counts, current HEAD, the team standards skill or document named in Team additions, file ownership, and authorization limits.
-- A reviewer gets `request.md` (verbatim), `plan.md` (when present), binding captures, the author's identity and model, selected repository IDs and local bindings, repo diff range(s) (`<base>..<head>`), recorded `**Gates:**`, applicable `.specs/constraints/` records, and the team standards skill or document named in Team additions—with no author summary or hints. A targeted re-check gets the prior round's open blocking findings + the fix diff range instead (allowing up to 3 total review rounds—Round 1 full review, Round 2 re-check, Round 3 re-check—before escalating to the user). A final reviewer covers the whole feature, even when several builders worked on it.
+- `Explore` gets one bounded question, selected roots, exclusions, a stop rule, and the evidence limits below.
+- A builder gets the approved `plan.md` (or small-change `request.md`), its feature or named vertical slices, applicable `.specs/constraints/` records, repository IDs and local bindings, baseline commands and counts, current HEAD, the team standards doc named in Team additions, file ownership, and authorization limits.
+- A reviewer gets `request.md` (verbatim), `plan.md` (when present), binding captures, the author's identity and model, repository IDs and local bindings, repo diff range(s) (`<base>..<head>`), recorded `**Gates:**`, applicable `.specs/constraints/` records, and the team standards doc—with no author summary or hints. A targeted re-check gets the prior round's open blocking findings and fix diff range instead. A final reviewer covers the whole feature, even when several builders worked on it.
 
-Dispatch a writer only after its spec and acceptance criteria are approved and its prerequisites pass. Treat a missing packet field as a planning gap and close it before dispatch.
+Dispatch a writer only after its spec and acceptance criteria are approved and prerequisites pass.
 
-## Explore answer
+## Explore answer and research
 
-Explore owns its web fetches. A source it still cannot read stays a gap in its answer. Give Explore this limit and format:
+`Explore` owns its web fetches; a source it still cannot read stays a gap in its answer. Brief `Explore` with these limits:
 
-```
-Read and search only. Stay inside selected roots. Cross a repository boundary only when both roots are selected.
-Read code and project docs first, then official docs, specs, and first-party APIs, then other web sources. Trace each claim to the source that owns it; a secondhand source never outranks the owner.
-Label claims [CODE], [DOC], [INFERRED], or [GAP]. Cite paths and lines. Do not include secret values.
-If a fetch fails, retry it once yourself.
-Report disagreement without choosing product intent. Stop at the stated question or budget.
+- Read and search only inside assigned roots; cross a repository boundary only when both roots are assigned.
+- Prefer primary sources: code and project docs first, then official docs, specs, and first-party APIs, then other web sources.
+- Cite `repo_id:path#line` or URL (with version or retrieval date and exact quote), distinguish verified facts from inferences and gaps, leave out secrets, and report disagreements without choosing product intent.
 
-Answer: <one or two sentences, or Not determined>
-Evidence: <tag, repo_id:path#line or URL, finding; for a URL add the version or retrieval date and the exact quote>
-Disagreements: <sources or none>
-Not inspected: <scope>
-Searched without result: <terms and paths>
-Fetch failures: <URL and error after the retry, or none>
-Stopped because: <stop rule or budget>
-```
-
-## Research
-
-For a research question, read [research](references/research.md) before dispatching Explore. It covers when to save the answer under `docs/research/` and the note's shape.
+For a research question, read [research](references/research.md) before dispatching `Explore` to decide whether and how to save lasting notes under `docs/research/`.
 
 ## Results and gaps
 

@@ -17,15 +17,15 @@ Freeze what must be true. Free how it is built. Have a fresh reviewer check it.
 
 Read the full phase reference before acting: [plan](references/plan.md) for a substantive feature, [build](references/build.md) once approved, and [review](references/review.md) after the final build commit. For advice or impact analysis without edits, run plan in read-only mode.
 
-Load the global `@orchestrate` skill before dispatching a Builder, Reviewer, or parallel Scout. Put the complete packet instructions in every subagent brief. `@orchestrate`'s delegation gate is authoritative for routing; preload only `plan.md` (or `request.md`) plus the diff rather than untouched legacy files.
+Load the global `@orchestrate` skill before dispatching a Builder, Reviewer, or parallel Scout. Put the complete packet instructions in every subagent brief; preload only `plan.md` (or `request.md`) plus the diff rather than untouched legacy files.
 
 ## Rules (hold without any reference)
 
-1. **Ask every product decision before presenting the plan (or small-change `request.md`).** Answers update the spec and are not approval; re-present before building. Write `**Approved**: <YYYY-MM-DD> - user: "<their words>"` in the leading metadata header only from words the user actually gave—nothing is built without it.
+1. **Ask every product decision before presenting the plan (or small-change `request.md`).** Answers update the spec and are not approval; re-present before building. Write `**Approved**: <YYYY-MM-DD> - user: "<their words>"` in the leading metadata header only from words the user actually gave—nothing is built without it. After recording approval, print the short copyable prompt for starting implementation in a fresh thread and pause unless the user asked to build in the current thread.
 2. **Rules run where tests reach.** Every outcome-changing rule has a test that fails if the rule is wrong. A test changes only together with the claim it proves; never weaken, skip, or disable a test to clear a gate—stop and ask.
 3. **A binding capture changes only by user decision.** Any screenshot, frame, or live site sent with the request binds unless the user called it inspiration.
 4. **Build slice by slice, S1 first, each slice committed before the next.** Work is done only when committed on a clean tree, gates are green, UI screens have been exercised in a browser (at capture size, or at a named viewport when no capture exists), and review is closed by the fix pass (and targeted re-check(s) when blockers were reported, up to 3 total review rounds). An uncommitted change is not delivered.
-5. **The reviewer is a fresh sub-agent, never the author**, and runs for every code change (run `@orchestrate`'s gate with `--exception independent-verification` below floor). Skip independent review only for pure non-logic edits (docs, comments, formatting), recording `**Review:** skipped - non-logic edit`.
+5. **The reviewer is a fresh sub-agent, never the author**, and runs for every code change. Skip independent review only for pure non-logic edits (docs, comments, formatting), recording `**Review:** skipped - non-logic edit`.
 
 ## Small changes
 
@@ -34,7 +34,7 @@ A change is small when all three hold:
 2. **No one-way door**: no contract (shared type, service method, event, schema, or persisted field), dependency, or migration change.
 3. **No outside semantic cascade**: reference search (LSP + `rg`) finds zero callers outside the changed files that observe different behavior.
 
-A small change skips `plan.md`. Create `.specs/features/<feature>/request.md` with a leading metadata block (above the first `## ` heading) holding `**Small change:** yes - <why it qualifies>`, `**Approved**: <YYYY-MM-DD> - user: "<their words>"`, `**Gates:**`, `**Review:**`, `**Fix pass:**`, and `**Re-check:**`. Put the user's prompt verbatim under `## Request`, and product answers plus numbered EARS criteria under `## Answers and criteria (planner)`. Build, run gates once, and send one fresh reviewer on `request.md` + `git diff <base>` (using `--exception independent-verification` below floor). If the reviewer finds the change ineligible for the small path, return to [plan](references/plan.md).
+A small change skips `plan.md`. Create `.specs/features/<feature>/request.md` with a leading metadata block (above the first `## ` heading) holding `**Small change:** yes - <why it qualifies>`, `**Approved**: <YYYY-MM-DD> - user: "<their words>"`, `**Gates:**`, `**Review:**`, `**Fix pass:**`, and `**Re-check:**`. Put the user's prompt verbatim under `## Request`, and product answers plus numbered EARS criteria under `## Answers and criteria (planner)`. After explicit approval, record `**Approved**: ...` and output a short copyable plaintext prompt pointing to `.specs/features/<feature>/request.md` (pausing unless the user asked to build in the current thread). Then build, run gates once, and send one fresh reviewer on `request.md` + `git diff <base>`. If the reviewer finds the change ineligible for the small path, return to [plan](references/plan.md).
 
 ## Shared rules
 
@@ -93,7 +93,7 @@ Run scripts from the repository root (pass `--root DIR` if elsewhere). Run with 
 | Before presenting `plan.md` | `python3 .opencode/skills/feature-workflow/scripts/validate_plan.py <feature>` |
 | Before each commit | `python3 .opencode/skills/feature-workflow/scripts/check_commit.py --message "<msg>"` |
 | Before committing constraint changes | `python3 .opencode/skills/feature-workflow/scripts/constraints.py check` |
-| Session resume hook | `python3 .opencode/skills/feature-workflow/scripts/resume_note.py` |
+| On resume or after compaction | `python3 .opencode/skills/feature-workflow/scripts/resume_note.py` |
 | After editing this skill's scripts or template | `python3 .opencode/skills/feature-workflow/scripts/selftest.py` (must stay at 0 failed) |
 
 Parts of this skill adapt `tlc-spec-lean` 3.2.0 under CC-BY-4.0; see [ATTRIBUTION.md](ATTRIBUTION.md).

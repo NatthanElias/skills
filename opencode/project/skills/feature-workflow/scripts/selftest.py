@@ -9,6 +9,7 @@ Usage:
   python3 .opencode/skills/feature-workflow/scripts/selftest.py
 """
 
+import json
 import shutil
 import subprocess
 import sys
@@ -19,10 +20,11 @@ SCRIPTS = Path(__file__).resolve().parent
 FIXTURE_PLAN = SCRIPTS / "fixtures" / "plan.md"
 
 
-def run_py(script, args, cwd=None):
+def run_py(script, args, cwd=None, input_text=None):
     return subprocess.run(
         [sys.executable, str(SCRIPTS / script), *args],
         cwd=cwd,
+        input=input_text,
         capture_output=True,
         encoding="utf-8",
         errors="replace",
@@ -404,6 +406,29 @@ def run_tests():
         )
         res = run_py("resume_note.py", ["--root", str(root)])
         expect("resume-recognizes-review-skipped", res.returncode == 0 and "review skipped" in res.stdout, res.stdout)
+
+        res = run_py("resume_note.py", ["--format", "vscode-hook"], input_text=json.dumps({"cwd": str(root), "source": "resume"}))
+        parsed = json.loads(res.stdout) if res.returncode == 0 and res.stdout.strip() else {}
+        hook_out = parsed.get("hookSpecificOutput", {})
+        expect(
+            "resume-vscode-hook-json",
+            res.returncode == 0
+            and "review skipped" in parsed.get("additionalContext", "")
+            and hook_out.get("hookEventName") == "SessionStart"
+            and "review skipped" in hook_out.get("additionalContext", ""),
+            res.stdout,
+        )
+
+        res = run_py("resume_note.py", ["--format", "vscode-hook"], input_text=json.dumps({"cwd": str(root), "source": "new"}))
+        expect("resume-vscode-hook-skips-new-session", res.returncode == 0 and json.loads(res.stdout) == {}, res.stdout)
+
+        res = run_py("resume_note.py", ["--format", "vscode-hook"], input_text=json.dumps({"cwd": str(root), "source": "resume", "agentId": "sub-1"}))
+        expect("resume-vscode-hook-skips-subagent", res.returncode == 0 and json.loads(res.stdout) == {}, res.stdout)
+
+    with tempfile.TemporaryDirectory() as td:
+        empty_root = make_repo(td)
+        res = run_py("resume_note.py", ["--format", "vscode-hook"], input_text=json.dumps({"cwd": str(empty_root)}))
+        expect("resume-vscode-hook-empty", res.returncode == 0 and json.loads(res.stdout) == {}, res.stdout)
 
     # 4. constraints.py: new, list, check.
     with tempfile.TemporaryDirectory() as td:
