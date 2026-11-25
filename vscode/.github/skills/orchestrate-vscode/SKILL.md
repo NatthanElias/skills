@@ -21,7 +21,7 @@ When a slice or review packet looks large, use [scripts/estimate_size.py](script
 python3 .github/skills/orchestrate-vscode/scripts/estimate_size.py <path>...
 ```
 
-Keep each subagent's scope within ~150k estimated tokens; split oversized work into independent pieces or whole vertical slices (a workflow that cuts its own slices, such as `feature-workflow`, still keeps each builder and reviewer within the ceiling).
+Keep each subagent's scope within ~150k estimated tokens; split oversized work into independent pieces or whole vertical slices (`feature-workflow` builds directly in the main session and keeps each feature within the ceiling for one fresh reviewer).
 
 - Read-only subagents, including `Explore`, may always run in parallel.
 - Writers run in parallel only when the always-on instructions allow parallel writes and each file has one active writer; otherwise they run in sequence.
@@ -33,7 +33,7 @@ List the agents the subagent tool offers, then take the first that fits:
 
 1. A custom agent whose description names this work. Dispatch it by its exact name without overriding its model. If two fit, or the fit is doubtful, ask the user with the question tool.
 2. `Explore`, for a read-only question.
-3. A general subagent (no agent name): it inherits the main session's tools, so the packet states its limits (for a build or review, copy the limits from the `task-worker` or `spec-verifier` agent file).
+3. A general subagent (no agent name): it inherits the main session's tools, so the packet states its limits (for a review, copy the limits from the `spec-verifier` agent file).
 
 Pass a model when dispatching `Explore` or a general subagent:
 

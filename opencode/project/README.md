@@ -12,7 +12,6 @@ This folder holds the OpenCode port of the VS Code project workflow for one Git 
 
 | Agent | File | Role |
 | --- | --- | --- |
-| `task-worker` | `agents/task-worker.md` | Builder subagent on `opencode/claude-opus-5-5`. It cannot start subagents. |
 | `spec-verifier` | `agents/spec-verifier.md` | Independent verifier subagent on `opencode/gpt-6.1-sol`. It cannot edit files or start subagents. |
 
 ## Dependencies

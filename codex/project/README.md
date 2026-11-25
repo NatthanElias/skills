@@ -12,7 +12,6 @@ This folder holds the Codex port of the VS Code project workflow for one Git rep
 
 | Agent | File | Role |
 | --- | --- | --- |
-| `task_worker` | `agents/task_worker.toml` | Builder, on `gpt-6.1-sol` with high reasoning effort. |
 | `spec_verifier` | `agents/spec_verifier.toml` | Independent verifier, on `gpt-6-astra` with medium reasoning effort. |
 
 ## Dependencies

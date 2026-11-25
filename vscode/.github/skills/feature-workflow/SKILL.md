@@ -17,7 +17,7 @@ Freeze what must be true. Free how it is built. Have a fresh reviewer check it.
 
 Read the full phase reference before acting: [plan](references/plan.md) for a substantive feature, [build](references/build.md) once approved, and [review](references/review.md) after the final build commit. For advice or impact analysis without edits, run plan in read-only mode.
 
-Read [orchestrate-vscode](../orchestrate-vscode/SKILL.md) and follow it before dispatching a Builder, Reviewer, or parallel Explore subagent, and before every review. Put the complete packet instructions in every subagent brief; preload only `request.md` (and `plan.md` when present) plus the diff rather than untouched legacy files.
+Read [orchestrate-vscode](../orchestrate-vscode/SKILL.md) and follow it before dispatching the Reviewer or parallel Explore subagents. Put the complete packet instructions in every subagent brief; preload only `request.md` (and `plan.md` when present) plus the diff rather than untouched legacy files.
 
 Unless the always-on instructions record `Repositories: single`, the workspace is multi-repository and setup has installed workspace-analysis: read `.github/skills/workspace-analysis/references/multi-repo-features.md` before planning, resuming, or completing a feature, because its identity, binding, and release-order rules add to every phase here. With `Repositories: single`, the feature works in one Git repository, and its artifacts carry no repository or checkout IDs.
 

@@ -17,7 +17,7 @@ Freeze what must be true. Free how it is built. Have a fresh reviewer check it.
 
 Read the full phase reference before acting: [plan](references/plan.md) for a substantive feature, [build](references/build.md) once approved, and [review](references/review.md) after the final build commit. For advice or impact analysis without edits, run plan in read-only mode.
 
-Load the global `$orchestrate` skill before dispatching a Builder, Reviewer, or parallel Scout. Put the complete packet instructions in every T3 worker brief; preload only `plan.md` (or `request.md`) plus the diff rather than untouched legacy files.
+Load the global `$orchestrate` skill before dispatching the Reviewer or parallel Scouts. Put the complete packet instructions in every T3 worker brief; preload only `plan.md` (or `request.md`) plus the diff rather than untouched legacy files.
 
 ## Rules (hold without any reference)
 

@@ -12,7 +12,6 @@ This folder holds the Claude Code port of the VS Code project workflow for one G
 
 | Agent | File | Role |
 | --- | --- | --- |
-| `task-worker` | `agents/task-worker.md` | Builder. It edits files and runs commands on `sonnet`. |
 | `spec-verifier` | `agents/spec-verifier.md` | Independent verifier. It reads and runs checks but does not edit, on `opus`. |
 
 ## Dependencies

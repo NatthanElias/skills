@@ -46,18 +46,18 @@ Three ideas shape this flow:
 
 ## Who does the work
 
-The main session decides when to work locally and when to delegate—including dispatching multiple small read-only Scouts in parallel for research or codebase discovery. `estimate_size.py` (or `delegation_gate.py` in the other harnesses) is an **advisory** sizing helper that divides file bytes by four to estimate tokens, mainly to catch oversized scopes before one agent is handed too much context:
+In `feature-workflow`, the main session builds directly slice by slice (matching upstream `tlc-spec-lean` 3.2.0, with no separate builder subagent), while dispatching parallel read-only Scouts when research splits cleanly and one fresh cross-vendor reviewer after the final build commit. Outside `feature-workflow`, `orchestrate` still lets you delegate bounded work by judgment. `estimate_size.py` (or `delegation_gate.py` in the other harnesses) is an **advisory** sizing helper (`bytes / 4`) for checking whether a feature or review approaches the ~150k estimated-token ceiling:
 
-| Estimated scope | Build | Review |
+| Estimated scope | Build (`feature-workflow`) | Review |
 | --- | --- | --- |
-| Fits comfortably in one pass (up to ~150k) | Main session or one subagent, by judgment | One fresh reviewer on another vendor's model for every code change (pure non-logic edits skip review) |
-| Over ~150k | Pieces of 150k or less, committed slice by slice | Split oversized features during planning so each accepted feature fits one end-to-end reviewer and one `review.md` |
+| Fits comfortably in one pass (up to ~150k) | Main session, slice by slice | One fresh reviewer on another vendor's model for every code change (pure non-logic edits skip review) |
+| Over ~150k | Split during planning so each accepted feature fits one review | Split oversized features during planning so each accepted feature fits one end-to-end reviewer and one `review.md` |
 
 The 150k ceiling is a heuristic setting, not a measured limit, aimed at avoiding mid-context degradation ([Liu et al., 2023](https://arxiv.org/abs/2307.03172)). Removing a mandatory lower-bound floor avoids paperwork on small parallel Scouts and leaves routine dispatch judgment to the orchestrator. Markdown edits to docs, skills, and instructions get focused checks instead of an independent review.
 
 For long-running threads, prefer **in-thread compaction** when a task is still underway rather than treating 150k tokens as an automatic handoff threshold, and use a fresh-thread handoff at meaningful work boundaries (such as approved planning to implementation) or whenever you explicitly ask for one. Relying on improved model handling of compaction is a design premise, not a verified benchmark.
 
-The main session keeps scope, questions, `review.md`, and the final report. A subagent cannot ask you anything, so a builder that hits a missing decision or broken assumption stops and returns the question.
+The main session keeps scope, questions, implementation, `review.md`, and the final report. Any subagent (Scout or Reviewer) starts without the conversation and cannot ask you anything, so it stops and returns missing decisions to the main session.
 
 ## What counts as done
 

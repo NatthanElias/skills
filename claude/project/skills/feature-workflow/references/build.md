@@ -6,7 +6,7 @@ Deliver the approved plan slice by slice at production quality. Criteria and app
 
 1. Reconcile against [Resume](../SKILL.md#resume) if work already exists.
 2. Run `constraints.py list` for touched areas and paths. Read the changed code paths, their callers, and every consumer/fixture listed in `plan.md` `Changes underneath`.
-3. Decide whether to build locally or dispatch a Builder via `/orchestrate` (use its advisory sizing helper when a slice looks large, keeping each slice within ~150k estimated tokens on green commits; if one slice alone exceeds the ceiling, refine the slice first). Put the complete packet instructions in every T3 Builder brief.
+3. Build directly in the current session, slice by slice (no separate Builder subagent). If a slice looks too broad to review comfortably in one pass (~150k estimated tokens via `/orchestrate`'s advisory sizing helper), refine or split the slice first.
 
 ## Slice by slice
 
@@ -19,7 +19,7 @@ For each slice:
 2. **Implement surgically—and completely inside scope:** Keep unrelated refactoring and formatting out of the diff, remove only what your change orphaned, and record any out-of-scope bug in the team's issue tracker (never in `.specs/`). Inside scope nothing is missing—what a control needs to work for real is the work even when no criterion names it.
 3. **Apply code comments:** Follow [comments.md](comments.md) (`Why:`, `Hazard:`, `Context:`, `TODO(<ref>):`) and any team standards doc named in `CLAUDE.md`.
 4. **Update `plan.md` truth when needed:** Keep `Shape` and `Changes underneath` accurate if implementation discovers a better hop or new consumer. Append any newly discovered one-way door to `Landing` (never edit approved rows) and propose its `.specs/constraints/` record if it binds future features. Record mid-build user decisions on `**Settled mid-build:**` in their words.
-5. **If an approved criterion or `Landing` door proves wrong or impossible, stop and ask the user** before changing it. A Builder subagent returns the question and evidence to the main session.
+5. **If an approved criterion or `Landing` door proves wrong or impossible, stop and ask the user** before changing it.
 
 ## Tests
 
