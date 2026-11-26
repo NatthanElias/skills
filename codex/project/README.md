@@ -12,6 +12,7 @@ This folder holds the Codex port of the VS Code project workflow for one Git rep
 
 | Agent | File | Role |
 | --- | --- | --- |
+| `plan_reviewer` | `agents/plan_reviewer.toml` | Pre-approval plan reviewer, on `gpt-6-astra` with medium reasoning effort. |
 | `spec_verifier` | `agents/spec_verifier.toml` | Independent verifier, on `gpt-6-astra` with medium reasoning effort. |
 
 ## Dependencies

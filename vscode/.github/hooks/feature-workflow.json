@@ -4,8 +4,11 @@
     "sessionStart": [
       {
         "type": "command",
-        "bash": "python3 .github/skills/feature-workflow/scripts/resume_note.py --format vscode-hook",
-        "powershell": "python .github\\skills\\feature-workflow\\scripts\\resume_note.py --format vscode-hook",
+        "bash": "python3 .github/skills/feature-workflow/scripts/resume_note.py --format vscode-hook 2>/dev/null || true",
+        "powershell": "if (Get-Command py -EA 0) { py -3 .github\\skills\\feature-workflow\\scripts\\resume_note.py --format vscode-hook 2>$null } else { python .github\\skills\\feature-workflow\\scripts\\resume_note.py --format vscode-hook 2>$null }; exit 0",
+        "env": {
+          "PYTHONIOENCODING": "utf-8"
+        },
         "timeoutSec": 10
       }
     ]

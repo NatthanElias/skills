@@ -20,7 +20,7 @@ Coding agents fail in predictable ways. The bundle bounds each task, makes the a
 | Invents commands, APIs, and facts | Agents never fabricate APIs, flags, or commands; assumptions never support PASS |
 | Grades its own work generously | Every code change gets a fresh reviewer on another vendor's model with no author summary or hints, checking the verbatim request and diff |
 | Weakens tests to go green | Every outcome-changing rule has a test that fails if the rule is wrong, tests change only with the claim they prove, and doubt triggers a scratch fault check |
-| Forgets between sessions | Shared coding constraints live in `.specs/constraints/`, and feature state lives in the leading header of `plan.md` / `request.md` plus `git log` |
+| Forgets between sessions | Shared coding constraints live in `.specs/constraints/`, feature state lives in the leading header of `plan.md` / `request.md` plus `git log`, and a `SessionStart` hook injects active feature status on resume |
 
 ## How a behavior change moves
 
@@ -41,12 +41,12 @@ flowchart LR
 Three ideas shape this flow:
 
 - **Small changes.** At most three files change, with no one-way door (no contract, schema, persisted field, dependency, migration, or cross-repository consumer change) and zero outside callers observing different behavior. A small change skips `plan.md`, records approval and EARS criteria in `request.md`, and still gets a fresh independent reviewer.
-- **Plans.** A plan freezes what must be true before freeing how it is built: problem, numbered [EARS](https://alistairmavin.com/ears/) criteria, binding captures, vertical slices (S1 tracer bullet first), and consumer/compatibility impact. `validate_plan.py` checks structure before presentation. After explicit approval, the agent records the approval and outputs a short copyable prompt so you can start implementation in a fresh thread or tell it to continue in place.
+- **Plans.** A plan freezes what must be true before freeing how it is built: problem, numbered [EARS](https://alistairmavin.com/ears/) criteria, binding captures, vertical slices (S1 tracer bullet first), and consumer/compatibility impact, arranged into two contiguous halves (*What must be true*, then *What is being built*). Unresolved choices are asked in frontier rounds before drafting. `validate_plan.py` checks structure, then one fresh zero-context `plan-reviewer` audits `plan.md` against `request.md` and live code before Risk-Ledger Approval (with an opt-in 2-half walkthrough). After explicit approval, the agent records the approval and outputs a short copyable prompt so you can start implementation in a fresh thread or tell it to continue in place.
 - **Hard-to-reverse choices.** The plan's `Landing` section lists each one with the alternative it rejected. After approval, a changed decision records a `**Settled mid-build:**` entry (with user approval for product/contract shifts).
 
 ## Who does the work
 
-In `feature-workflow`, the main session builds directly slice by slice (matching upstream `tlc-spec-lean` 3.2.0, with no separate builder subagent), while dispatching parallel read-only Scouts when research splits cleanly and one fresh cross-vendor reviewer after the final build commit. Outside `feature-workflow`, `orchestrate` still lets you delegate bounded work by judgment. `estimate_size.py` (or `delegation_gate.py` in the other harnesses) is an **advisory** sizing helper (`bytes / 4`) for checking whether a feature or review approaches the ~150k estimated-token ceiling:
+In `feature-workflow`, the main session builds directly slice by slice (matching upstream `tlc-spec-lean` 3.2.0, with no separate builder subagent), while dispatching parallel read-only Scouts when research splits cleanly, one fresh advisory `plan-reviewer` before plan approval, and one fresh cross-vendor `spec-verifier` after the final build commit. Outside `feature-workflow`, `orchestrate` still lets you delegate bounded work by judgment. `estimate_size.py` (or `delegation_gate.py` in the other harnesses) is an **advisory** sizing helper (`bytes / 4`) for checking whether a feature or review approaches the ~150k estimated-token ceiling:
 
 | Estimated scope | Build (`feature-workflow`) | Review |
 | --- | --- | --- |

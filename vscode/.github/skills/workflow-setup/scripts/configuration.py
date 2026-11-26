@@ -199,12 +199,29 @@ def skill_files(github, skills):
     return files
 
 
-def package_files(github, skills):
-    """Selected skill trees, with their skill-local references, and helper agents.
+def hook_files(github, skills):
+    files = {}
+    hooks_dir = github / "hooks"
+    if not hooks_dir.exists():
+        return files
+    if hooks_dir.is_symlink():
+        raise ValueError(f"Unreviewed skill symlink: {hooks_dir}")
+    for name in skills:
+        hook = hooks_dir / f"{name}.json"
+        if hook.is_symlink():
+            raise ValueError(f"Unreviewed skill symlink: {hook}")
+        if hook.is_file():
+            files[hook.relative_to(github).as_posix()] = hook
+    return files
 
-    Any other .github file, such as a team standards document, belongs to the team. The package README lives at
-    the repository root, outside .github, so a sync never ships one."""
+
+def package_files(github, skills):
+    """Selected skill trees, their matching hook configs, and helper agents.
+
+    Any other .github file, such as a team standards document or custom hook, belongs to the team. The package
+    README lives at the repository root, outside .github, so a sync never ships one."""
     files = skill_files(github, skills)
+    files.update(hook_files(github, skills))
     tree_files(github, github / "agents", files)
     return files
 
@@ -212,12 +229,17 @@ def package_files(github, skills):
 def from_package(source_github, relative):
     """Whether the source still ships the skill folder that holds this file; agents always come from it."""
     parts = relative.split("/")
-    return parts[0] != "skills" or (source_github / "skills" / parts[1] / "SKILL.md").is_file()
+    if parts[0] == "skills":
+        return (source_github / "skills" / parts[1] / "SKILL.md").is_file()
+    if parts[0] == "hooks":
+        return (len(parts) == 2 and parts[1].endswith(".json")
+                and (source_github / "skills" / parts[1][:-5] / "SKILL.md").is_file())
+    return True
 
 
 def package_owned(relative):
     """Whether a manifest entry names current package content; older setups also tracked shared references."""
-    return relative.split("/")[0] in ("skills", "agents")
+    return relative.split("/")[0] in ("skills", "agents", "hooks")
 
 
 def plan_updates(target_github, source_github, skills, adopted, keep=()):
@@ -282,6 +304,11 @@ def adopted_hashes(github, source_github, skills, adopted, kept=(), removed=()):
 def unselected_skills(github, skills):
     return sorted(path.parent.name for path in (github / "skills").glob("*/SKILL.md")
                   if path.parent.name not in skills)
+
+
+def unselected_hooks(github, skills):
+    return sorted(path.name for path in (github / "hooks").glob("*.json")
+                  if path.stem not in skills and (github / "skills" / path.stem / "SKILL.md").is_file())
 
 
 def candidates(github, source_github, skills, single, known=None):

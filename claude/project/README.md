@@ -12,6 +12,7 @@ This folder holds the Claude Code port of the VS Code project workflow for one G
 
 | Agent | File | Role |
 | --- | --- | --- |
+| `plan-reviewer` | `agents/plan-reviewer.md` | Pre-approval plan reviewer. Read-only audit of `plan.md` against `request.md` and live code, on `opus`. |
 | `spec-verifier` | `agents/spec-verifier.md` | Independent verifier. It reads and runs checks but does not edit, on `opus`. |
 
 ## Dependencies

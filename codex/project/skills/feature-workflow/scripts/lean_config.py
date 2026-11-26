@@ -22,6 +22,7 @@ APPROVED_FULL_RE = re.compile(
     re.IGNORECASE,
 )
 APPROVED_ANY_RE = re.compile(r"^\**\s*Approved\s*:?\s*\**\s*:\s*\S", re.IGNORECASE)
+PLAN_REVIEW_RE = re.compile(r"^\**\s*Plan review\s*:?\s*\**\s*:?\s*(done|skipped)\b", re.IGNORECASE)
 SMALL_CHANGE_RE = re.compile(r"^\**\s*Small change\s*:?\s*\**\s*:?\s*yes\b", re.IGNORECASE)
 REVIEW_SKIPPED_RE = re.compile(r"^\**\s*Review\s*:?\s*\**\s*:?\s*skipped\b", re.IGNORECASE)
 REVIEW_SENT_RE = re.compile(r"^\**\s*Review\s*:?\s*\**\s*:?\s*sent at\s+`?([0-9a-f]{4,40})`?", re.IGNORECASE)
@@ -44,7 +45,7 @@ RECHECK_ESCALATED_RE = re.compile(
 )
 RECHECK_OPEN_RE = re.compile(r"^\**\s*Re-check\s*:?\s*\**\s*:?\s*open\b", re.IGNORECASE)
 ANY_STATE_RE = re.compile(
-    r"^\**\s*(Small change|Approved|Settled mid-build|Gates|Review|Fix pass|Re-check)\s*:?\s*\**\s*:",
+    r"^\**\s*(Small change|Plan review|Approved|Settled mid-build|Gates|Review|Fix pass|Re-check)\s*(?::\s*\**|\**\s*:)",
     re.IGNORECASE,
 )
 
@@ -108,6 +109,7 @@ def _valid_iso_date(text):
 def parse_header_state(raw_lines):
     """Parse workflow state strictly from the leading metadata block (above first `## `, outside fences)."""
     hlines = header_lines(raw_lines)
+    plan_review = None
     approved = False
     approved_malformed = False
     small_change = False
@@ -125,6 +127,9 @@ def parse_header_state(raw_lines):
     for s in hlines:
         if ANY_STATE_RE.match(s):
             has_any_state = True
+        m_pr = PLAN_REVIEW_RE.match(s)
+        if m_pr:
+            plan_review = m_pr.group(1).lower()
         if SMALL_CHANGE_RE.match(s):
             small_change = True
         m_app = APPROVED_FULL_RE.match(s)
@@ -166,6 +171,7 @@ def parse_header_state(raw_lines):
     return {
         "has_any_state": has_any_state,
         "small_change": small_change,
+        "plan_review": plan_review,
         "approved": approved,
         "approved_malformed": approved_malformed and not approved,
         "review_skipped": review_skipped,

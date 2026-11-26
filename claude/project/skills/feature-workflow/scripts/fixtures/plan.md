@@ -1,6 +1,7 @@
 # Dunning on failed charge
 
-**Approved**: 2026-10-23 - user: "approved, go ahead"
+**Plan review:** done - 0 fixed / 0 contested / 0 escalated
+**Approved**: 2026-10-23 - user: "Approve plan" (ask_user)
 **Settled mid-build:** none
 **Gates:** `npm test` @ `a1b2c3d` (exit 0, 214 passed, 0 failed, 0 skipped)
 **Review:** sent at a1b2c3d
@@ -14,6 +15,57 @@ which took 11 days on the last three cases. Support absorbs the refund argument 
 learns that paying is optional.
 
 When this ships, a failed charge suspends access within one billing cycle and the member sees why.
+
+## Criteria
+
+### S1: Suspension on a failed charge (P1)
+
+A failed charge suspends the subscription and denies paid access.
+
+**Acceptance Criteria**
+
+1. WHEN the provider reports a failed charge THEN the system SHALL set the subscription status to `Suspended` (TLC-412-AC1)
+   - first failed charge on `Active` → `Suspended`; second failed charge while `Suspended` → stays `Suspended`
+2. IF the reported provider status is unknown THEN the system SHALL leave the status unchanged and record a `billing.status_unmapped` event
+   - unknown status `"paused_v2"` → status unchanged, event recorded
+3. WHILE a subscription is `Suspended` the system SHALL deny access to paid access groups
+   - `Suspended` member requests `/pro/report` → `403`
+4. The system SHALL never move a subscription directly from `Suspended` to `Trialing`
+   - transition `Suspended → Trialing` → rejected
+
+### S2: Webhook ingest (P1)
+
+Replay of a delivery is a no-op; missing subscription id or invalid signature is rejected.
+
+**Acceptance Criteria**
+
+5. WHEN a webhook delivery id has already been processed THEN the system SHALL return `200` and change no records
+   - duplicate `provider_delivery_id` → `200`, subscription row untouched
+6. IF the provider payload is missing a subscription id THEN the system SHALL return `422` and persist nothing
+   - payload without `subscription_id` → `422`, 0 new rows
+7. IF a delivery carries no valid provider signature THEN the system SHALL return `401` and persist nothing
+   - bad HMAC header → `401`, 0 new rows
+
+## Out of scope
+
+| Excluded | Why |
+| --- | --- |
+| Retry schedule configuration | the provider already owns retries |
+| Dunning emails | copy is not written yet, tracked separately |
+
+## Assumptions
+
+| Assumption | Chosen default | Rationale | Confirmed? |
+| --- | --- | --- | --- |
+| Grace period after first failure | none - suspend on first failed charge | provider already retried 3 times before reporting failure | y |
+| Status for a member never charged | stays `Active` | absence of a charge is not a failure | y |
+
+**Open questions:** none - all resolved or logged above.
+
+## Sources
+
+- TLC-412 - suspension rule and 11-day evidence
+- provider webhook reference - 9 statuses and 5 event types
 
 ## Shape
 
@@ -77,54 +129,3 @@ unique (door 2), `status` not null with `suspended` in the enum (door 1).
 | `POST /webhooks/provider` response codes | `200` accepted/replayed, `409` concurrent duplicate, `422` missing subscription id | `204` - provider retries responses without a body | revert route handler before switching provider webhook endpoint |
 
 - Nothing else in this change is hard to reverse
-
-## Criteria
-
-### S1: Suspension on a failed charge (P1)
-
-A failed charge suspends the subscription and denies paid access.
-
-**Acceptance Criteria**
-
-1. WHEN the provider reports a failed charge THEN the system SHALL set the subscription status to `Suspended` (TLC-412-AC1)
-   - first failed charge on `Active` → `Suspended`; second failed charge while `Suspended` → stays `Suspended`
-2. IF the reported provider status is unknown THEN the system SHALL leave the status unchanged and record a `billing.status_unmapped` event
-   - unknown status `"paused_v2"` → status unchanged, event recorded
-3. WHILE a subscription is `Suspended` the system SHALL deny access to paid access groups
-   - `Suspended` member requests `/pro/report` → `403`
-4. The system SHALL never move a subscription directly from `Suspended` to `Trialing`
-   - transition `Suspended → Trialing` → rejected
-
-### S2: Webhook ingest (P1)
-
-Replay of a delivery is a no-op; missing subscription id or invalid signature is rejected.
-
-**Acceptance Criteria**
-
-5. WHEN a webhook delivery id has already been processed THEN the system SHALL return `200` and change no records
-   - duplicate `provider_delivery_id` → `200`, subscription row untouched
-6. IF the provider payload is missing a subscription id THEN the system SHALL return `422` and persist nothing
-   - payload without `subscription_id` → `422`, 0 new rows
-7. IF a delivery carries no valid provider signature THEN the system SHALL return `401` and persist nothing
-   - bad HMAC header → `401`, 0 new rows
-
-## Out of scope
-
-| Excluded | Why |
-| --- | --- |
-| Retry schedule configuration | the provider already owns retries |
-| Dunning emails | copy is not written yet, tracked separately |
-
-## Assumptions
-
-| Assumption | Chosen default | Rationale | Confirmed? |
-| --- | --- | --- | --- |
-| Grace period after first failure | none - suspend on first failed charge | provider already retried 3 times before reporting failure | y |
-| Status for a member never charged | stays `Active` | absence of a charge is not a failure | y |
-
-**Open questions:** none - all resolved or logged above.
-
-## Sources
-
-- TLC-412 - suspension rule and 11-day evidence
-- provider webhook reference - 9 statuses and 5 event types

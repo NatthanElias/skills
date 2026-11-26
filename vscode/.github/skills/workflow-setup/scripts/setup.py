@@ -506,6 +506,11 @@ def main():
         if unselected:
             print("Warning: these skill folders are not selected but stay installed, so Copilot may still load "
                   "them: " + ", ".join(unselected) + ". Delete a folder to retire its skill.\n")
+        extra_hooks = configuration.unselected_hooks(github, skills)
+        if extra_hooks:
+            print("Warning: these skill hook files are not selected but stay installed, so Copilot may still run "
+                  "them: " + ", ".join(f".github/hooks/{name}" for name in extra_hooks)
+                  + ". Delete a file to disable its hook.\n")
         report_candidates(found, "skills" in settings)
         if new_record:
             print("Proposed record of the package skill list in setup-ownership.json, so the next sync marks only "

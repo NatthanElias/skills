@@ -56,11 +56,14 @@ For changes to code, configuration, dependencies, builds, or tests, dispatch one
 
 An independent reviewer is a fresh subagent, never the session or dispatch that built the work. Its model comes from another vendor family than the builder's, at the same tier or higher. If the matching custom reviewer runs on the builder's family, ask the user with the question tool. The author's own review counts as feedback; without a qualifying reviewer when independent review is required, record independent review as pending and leave the feature unverified.
 
+Pre-approval plan review (`plan-reviewer`) is advisory rather than a post-build verification gate: prefer another vendor family (dispatch a general subagent on `Claude Opus 5.5 (copilot)` when the planner runs on GPT), and if dispatch fails or only a same-family reviewer is available, record that in `**Plan review:**` and continue to user approval.
+
 ## Prepare the packet
 
 Unless the always-on instructions record `Repositories: single`, resolve selected repositories and their IDs through `workspace-analysis`. With `Repositories: single`, name the repository root instead of repository IDs and bindings.
 
 - `Explore` gets one bounded question, selected roots, exclusions, a stop rule, and the evidence limits below.
+- `plan-reviewer` gets `request.md` (verbatim), `plan.md`, repository root(s) and local bindings, applicable `.specs/constraints/` paths, and the team standards doc—with no chat history, author summary, or hints.
 - A builder gets the approved `plan.md` (or small-change `request.md`), its feature or named vertical slices, applicable `.specs/constraints/` records, repository IDs and local bindings, baseline commands and counts, current HEAD, the team standards doc named in Team additions, file ownership, and authorization limits.
 - A reviewer gets `request.md` (verbatim), `plan.md` (when present), binding captures, the author's identity and model, repository IDs and local bindings, repo diff range(s) (`<base>..<head>`), recorded `**Gates:**`, applicable `.specs/constraints/` records, and the team standards doc—with no author summary or hints. A targeted re-check gets the prior round's open blocking findings and fix diff range instead. A final reviewer covers the whole feature, even when several builders worked on it.
 

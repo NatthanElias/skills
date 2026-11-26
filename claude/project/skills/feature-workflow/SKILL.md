@@ -15,13 +15,13 @@ Freeze what must be true. Free how it is built. Have a fresh reviewer check it.
  approved   slice       up to 2 targeted re-checks (3 rounds max)
 ```
 
-Read the full phase reference before acting: [plan](references/plan.md) for a substantive feature, [build](references/build.md) once approved, and [review](references/review.md) after the final build commit. For advice or impact analysis without edits, run plan in read-only mode.
+Read the full phase reference before acting: [plan](references/plan.md) (and [plan-review](references/plan-review.md) before presenting `plan.md`) for a substantive feature, [build](references/build.md) once approved, and [review](references/review.md) after the final build commit. For advice or impact analysis without edits, run plan in read-only mode.
 
-Load the global `/orchestrate` skill before dispatching the Reviewer or parallel Scouts. Put the complete packet instructions in every T3 worker brief; preload only `plan.md` (or `request.md`) plus the diff rather than untouched legacy files.
+Load the global `/orchestrate` skill before dispatching `plan-reviewer`, `spec-verifier`, or parallel Scouts. Put the complete packet instructions in every T3 worker brief; preload only `plan.md` (or `request.md`) plus the diff rather than untouched legacy files.
 
 ## Rules (hold without any reference)
 
-1. **Ask every product decision before presenting the plan (or small-change `request.md`).** Answers update the spec and are not approval; re-present before building. Write `**Approved**: <YYYY-MM-DD> - user: "<their words>"` in the leading metadata header only from words the user actually gave—nothing is built without it. After recording approval, print the short copyable prompt for starting implementation in a fresh thread and pause unless the user asked to build in the current thread.
+1. **Ask every product decision before drafting `plan.md` (or presenting small-change `request.md`).** Answers update the spec and are not approval; on revisions, re-present the changed Risk Ledger items before building. Write `**Approved**: <YYYY-MM-DD> - user: "<their words>"` (or `user: "Approve plan" (AskUserQuestion)` when approved via the form button) in the leading metadata header only from an explicit user approval—nothing is built without it. After recording approval, print the short copyable prompt for starting implementation in a fresh thread and pause unless the user asked to build in the current thread.
 2. **Rules run where tests reach.** Every outcome-changing rule has a test that fails if the rule is wrong. A test changes only together with the claim it proves; never weaken, skip, or disable a test to clear a gate—stop and ask.
 3. **A binding capture changes only by user decision.** Any screenshot, frame, or live site sent with the request binds unless the user called it inspiration.
 4. **Build slice by slice, S1 first, each slice committed before the next.** Work is done only when committed on a clean tree, gates are green, UI screens have been exercised in a browser (at capture size, or at a named viewport when no capture exists), and review is closed by the fix pass (and targeted re-check(s) when blockers were reported, up to 3 total review rounds). An uncommitted change is not delivered.
@@ -38,7 +38,7 @@ A small change skips `plan.md`. Create `.specs/features/<feature>/request.md` wi
 
 ## Shared rules
 
-- **Files hold the run; chat does not survive compaction.** Save the user's prompt verbatim under `## Request` in `.specs/features/<feature>/request.md` before asking questions or planning. Keep all workflow state lines (`**Small change:**`, `**Approved**:`, `**Settled mid-build:**`, `**Gates:**`, `**Review:**`, `**Fix pass:**`, `**Re-check:**`) in the leading metadata block above the first `## ` heading of `plan.md` (or `request.md` for small changes) so verbatim user text and fenced examples never alter state.
+- **Files hold the run; chat does not survive compaction.** Save the user's prompt verbatim under `## Request` in `.specs/features/<feature>/request.md` before asking questions or planning. Keep all workflow state lines (`**Small change:**`, `**Plan review:**`, `**Approved**:`, `**Settled mid-build:**`, `**Gates:**`, `**Review:**`, `**Fix pass:**`, `**Re-check:**`) in the leading metadata block above the first `## ` heading of `plan.md` (or `request.md` for small changes) so verbatim user text and fenced examples never alter state.
 - **Constraints before code:** Run `python3 .claude/skills/feature-workflow/scripts/constraints.py list` for the areas and paths you touch before planning or building. Conform to every matching record or propose a superseding record ([constraints](references/constraints.md)). `docs/roadmap/DECISIONS.md` is for people, never a coding constraint.
 - **Load team standards:** Load any team standards skill or document named in `CLAUDE.md` Team additions before planning, building, or reviewing. Apply [comments](references/comments.md) to new or edited comments.
 - **Keep upstream IDs:** Preserve accepted requirement or ticket IDs (e.g., `JIRA-123`, `REQ-12-AC1`) exactly as given beside EARS criteria.
@@ -69,7 +69,8 @@ Compaction keeps the task and drops the rules. Re-read this `SKILL.md` and the a
 | The files show | Next step |
 | --- | --- |
 | `request.md` with no `**Small change:** yes` and no `plan.md` | Finish planning and write `plan.md` |
-| `plan.md` (or small-change `request.md`) without valid `**Approved**: <date> - user: "..."` | Present spec and stop for approval |
+| `plan.md` without `**Plan review:**` and without valid `**Approved**:` | Run `validate_plan.py`, dispatch `plan-reviewer` once, then present Risk Ledger |
+| `plan.md` (with `**Plan review:**`) or small-change `request.md` without valid `**Approved**: <date> - user: "..."` | Present Risk Ledger (or small-change spec) and stop for approval |
 | `**Review:** skipped - non-logic edit` | Update affected living docs and report outcome |
 | `**Review:**` not yet `sent at <hash>` | Build the first slice not named in `git log` (read uncommitted edits first) |
 | `**Review:** sent at <hash>` and no `review.md` (or dispatch failed) | Wait if live; if dispatch failed or in a new session, re-dispatch and update `sent at` |

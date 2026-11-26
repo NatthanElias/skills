@@ -75,6 +75,8 @@ Skip independent review for typos, comments, formatting, documentation, and Mark
 
 A Verifier runs on a different model from the Builder at the same tier or higher, and from another model family when configured. Built-in agents inherit the parent's model, so a cross-model Verifier needs a custom agent with its own `model`; without one, ask the user with `question`. Without a qualifying Verifier, record independent review as pending and do not report the work as verified.
 
+Pre-approval plan review (`plan-reviewer`) is advisory rather than a post-build verification gate: prefer another vendor family when configured, and if dispatch fails or only a same-family reviewer is available, record that in `**Plan review:**` and continue to user approval.
+
 ## Brief, dispatch, and coordinate
 
 Give each worker its bounded objective, exact scope and file ownership, applicable constraints and decisions, required skill names (subagents do not inherit loaded skills), validation/evidence expectations, persona limits, and the branch restriction. Dispatch writers only after their spec and acceptance criteria are approved. Assign each file to one active writer at a time, including yourself; transfer ownership only after the previous writer stops.

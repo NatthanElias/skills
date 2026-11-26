@@ -197,10 +197,13 @@ def run_tests():
                 "| Decimal price | Cents | y - money |\n"
                 "| Legacy label | Migrated label | y - AD-007 |\n"
                 "| Extra button | Omitted | y - user: \"drop the button\" |\n\n## Sources",
+            ).replace(
+                "- provider webhook reference - 9 statuses and 5 event types",
+                "- provider webhook reference - 9 statuses and 5 event types\n"
+                "- ![dark](captures/settings.dark.png) - binding - dark mode\n"
+                "- ![light](captures/settings.light.png) - binding - light mode\n"
+                "- ![mood](captures/mood.png) - non-binding - user: \"just tone inspiration\" - tone",
             )
-            + "\n- ![dark](captures/settings.dark.png) - binding - dark mode\n"
-            + "- ![light](captures/settings.light.png) - binding - light mode\n"
-            + "- ![mood](captures/mood.png) - non-binding - user: \"just tone inspiration\" - tone\n"
         )
         (fdir / "plan.md").write_text(missing_light, encoding="utf-8")
         res = run_py("validate_plan.py", ["dunning", "--root", str(root)])
@@ -394,6 +397,21 @@ def run_tests():
         (fdir / "request.md").write_text("## Request\nDo x.\n", encoding="utf-8")
         res = run_py("resume_note.py", ["--root", str(root)])
         expect("resume-ignores-nested-and-tab-fence-approval", res.returncode == 0 and "plan awaiting approval" in res.stdout, res.stdout)
+
+        (fdir / "plan.md").write_text(
+            "# Fenced\n\n**Plan review:** done - 2 fixed / 0 contested / 1 escalated\n\n## Problem\nx\n",
+            encoding="utf-8",
+        )
+        res = run_py("resume_note.py", ["--root", str(root)])
+        expect("resume-reports-plan-review-done", res.returncode == 0 and "plan awaiting approval (plan review done)" in res.stdout, res.stdout)
+
+        (fdir / "plan.md").write_text(
+            "# Fenced\n\n**Plan review:** done - 1 fixed / 0 contested / 0 escalated\n"
+            "**Approved**: 2026-11-25 - user: \"Approve plan\" (ask_user)\n\n## Problem\nx\n",
+            encoding="utf-8",
+        )
+        res = run_py("resume_note.py", ["--root", str(root)])
+        expect("resume-accepts-ask-user-approval", res.returncode == 0 and "approved, build in progress" in res.stdout, res.stdout)
 
         sc_dir = root / ".specs" / "features" / "tiny-doc"
         sc_dir.mkdir(parents=True)

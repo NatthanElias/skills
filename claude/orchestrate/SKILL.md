@@ -78,6 +78,8 @@ Skip independent review for typos, comments, formatting, documentation, and Mark
 
 A Verifier runs on a different model from the Builder at the same tier or higher, and from another model family when reachable (such as a Codex Verifier through T3 for a Claude Builder). If only the Builder's model is available, ask the user with `AskUserQuestion`. Without a qualifying Verifier, record independent review as pending and do not report the work as verified.
 
+Pre-approval plan review (`plan-reviewer`) is advisory rather than a post-build verification gate: prefer another vendor family when reachable (such as T3 Codex `gpt-6.1-sol`), and if dispatch fails or only a same-family reviewer is available, record that in `**Plan review:**` and continue to user approval.
+
 ## Brief, dispatch, and coordinate
 
 Give each worker its bounded objective, exact scope and file ownership, applicable constraints and decisions, validation/evidence expectations, persona limits, and the branch restriction. Subagents do not inherit loaded skills, so name any skill they must follow. Dispatch writers only after their spec and acceptance criteria are approved. Assign each file to one active writer at a time, including yourself; transfer ownership only after the previous writer stops.

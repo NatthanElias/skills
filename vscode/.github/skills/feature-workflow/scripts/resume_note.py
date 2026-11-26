@@ -103,7 +103,7 @@ def feature_state(fdir: Path):
         if not request.is_file() and not st["has_any_state"]:
             return ("legacy",)
         if not st["approved"]:
-            label = "plan awaiting approval"
+            label = f"plan awaiting approval (plan review {st['plan_review']})" if st["plan_review"] else "plan awaiting approval"
         else:
             label = _classify_run(st, review, prefix="approved, ")
         mtime = max(p.stat().st_mtime for p in (plan, request, review) if p.is_file())
@@ -176,35 +176,43 @@ def main(argv=None):
     args = parser.parse_args(argv)
     root = args.root
     if args.format == "vscode-hook":
-        payload = {}
-        if not sys.stdin.isatty():
-            try:
+        try:
+            payload = {}
+            if not sys.stdin.isatty():
                 raw = sys.stdin.read().strip()
                 if raw:
                     data = json.loads(raw)
                     if isinstance(data, dict):
                         payload = data
-            except (json.JSONDecodeError, OSError):
-                pass
-        # Skip subagents and unrelated new/startup sessions; emit on resume (or when source is omitted).
-        source = payload.get("source")
-        if payload.get("agentId") or payload.get("agent_id") or (isinstance(source, str) and source != "resume"):
-            print("{}")
-            return 0
-        if root is None:
-            cwd = payload.get("cwd")
-            root = Path(cwd) if isinstance(cwd, str) and cwd else Path.cwd()
-        text = note(root)
-        if text:
-            # Top-level additionalContext is read by the Copilot harness; hookSpecificOutput supports the legacy Local harness.
-            print(json.dumps({
-                "additionalContext": text,
-                "hookSpecificOutput": {
-                    "hookEventName": "SessionStart",
+            # Skip subagents and unrelated new/startup sessions; emit on resume (or when source is omitted).
+            source = payload.get("source")
+            if (
+                payload.get("agentId")
+                or payload.get("agent_id")
+                or (isinstance(source, str) and source.lower() != "resume")
+            ):
+                print("{}")
+                return 0
+            if root is None:
+                cwd = payload.get("cwd")
+                root = Path(cwd) if isinstance(cwd, str) and cwd else Path.cwd()
+                if not git(root, "rev-parse", "--show-toplevel"):
+                    script_root = Path(__file__).resolve().parents[4]
+                    if git(script_root, "rev-parse", "--show-toplevel"):
+                        root = script_root
+            text = note(root)
+            if text:
+                # Top-level additionalContext is read by the Copilot harness; hookSpecificOutput supports the legacy Local harness.
+                print(json.dumps({
                     "additionalContext": text,
-                },
-            }))
-        else:
+                    "hookSpecificOutput": {
+                        "hookEventName": "SessionStart",
+                        "additionalContext": text,
+                    },
+                }))
+            else:
+                print("{}")
+        except Exception:
             print("{}")
         return 0
     text = note(root or Path.cwd())

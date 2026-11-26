@@ -12,6 +12,7 @@ This folder holds the OpenCode port of the VS Code project workflow for one Git 
 
 | Agent | File | Role |
 | --- | --- | --- |
+| `plan-reviewer` | `agents/plan-reviewer.md` | Pre-approval plan reviewer subagent on `opencode/gpt-6.1-sol`. Read-only; cannot edit, run bash, or start subagents. |
 | `spec-verifier` | `agents/spec-verifier.md` | Independent verifier subagent on `opencode/gpt-6.1-sol`. It cannot edit files or start subagents. |
 
 ## Dependencies

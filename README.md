@@ -54,7 +54,7 @@ The `vscode/.github/` bundle is the source of the shared skills. Each harness fo
 | `workspace-analysis` | Project | VS Code | Bundle only |
 | `orchestrate-vscode` | Project | VS Code | Bundle only |
 
-"All" means VS Code and the four harness folders. In VS Code, every skill is project-local, because the bundle installs into a repository's `.github/`. The project collections also hold the spec verifier agent, ported from `vscode/.github/agents/`.
+"All" means VS Code and the four harness folders. In VS Code, every skill is project-local, because the bundle installs into a repository's `.github/`. The project collections also hold the `plan-reviewer` and `spec-verifier` agents, ported from `vscode/.github/agents/`.
 
 ## Project collections
 
